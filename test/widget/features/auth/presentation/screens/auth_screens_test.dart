@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
@@ -41,20 +42,34 @@ void main() {
   });
 
   Widget createWidgetUnderTest(final Widget screen) {
+    final router = GoRouter(
+      initialLocation: '/test',
+      routes: [
+        GoRoute(path: '/test', builder: (context, state) => screen),
+        GoRoute(
+          path: '/login',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Login Screen Route')),
+        ),
+        GoRoute(
+          path: '/signup',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Signup Screen Route')),
+        ),
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Home Screen Route')),
+        ),
+      ],
+    );
+
     return ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(mockAuthRepository),
         isOfflineModeProvider.overrideWith((ref) => fakeOfflineNotifier),
       ],
-      child: MaterialApp(
-        initialRoute: '/test',
-        routes: {
-          '/test': (context) => screen,
-          '/login': (context) => const Scaffold(body: Text('Login Screen Route')),
-          '/signup': (context) => const Scaffold(body: Text('Signup Screen Route')),
-          '/': (context) => const Scaffold(body: Text('Home Screen Route')),
-        },
-      ),
+      child: MaterialApp.router(routerConfig: router),
     );
   }
 
@@ -63,7 +78,10 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest(const WelcomeScreen()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Listaí'), findsOneWidget);
+      expect(
+        find.image(const AssetImage('assets/logo/listai-logo-removebg.png')),
+        findsOneWidget,
+      );
       expect(find.widgetWithText(ElevatedButton, 'Entrar'), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, 'Criar conta'), findsOneWidget);
       expect(find.widgetWithText(TextButton, 'Continuar sem login'), findsOneWidget);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listai/features/shopping_list/presentation/providers/current_list_provider.dart';
+import 'package:listai/features/shopping_list/presentation/providers/saved_lists_provider.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_item.dart';
 import 'package:listai/features/photo_capture/presentation/screens/photo_viewer_screen.dart';
 import 'package:listai/core/utils/money.dart';
@@ -42,6 +43,13 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
       appBar: AppBar(
         title: const Text('Lista Atual'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () {
+              context.push('/analytics');
+            },
+            tooltip: 'Analytics',
+          ),
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: () {
@@ -404,9 +412,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () {
-                  // TODO: Finalize purchase
-                },
+                onPressed: () => _showFinalizePurchaseDialog(context, ref),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -501,6 +507,66 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
         );
       },
     );
+  }
+
+  Future<void> _showFinalizePurchaseDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final list = ref.read(currentListProvider).value;
+    if (list == null || list.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Adicione itens antes de finalizar a compra.'),
+        ),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Finalizar compra?'),
+          content: Text(
+            'Total: ${list.totalPrice.format()}\n\n'
+            'A compra será registrada no histórico e a lista atual será encerrada.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Finalizar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    await ref.read(currentListProvider.notifier).finalizePurchase();
+
+    if (!context.mounted) return;
+
+    final state = ref.read(currentListProvider);
+    if (state.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao finalizar: ${state.error}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } else {
+      // Force the history tab to re-query so the finalized purchase shows up.
+      ref.invalidate(savedListsProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compra finalizada com sucesso!')),
+      );
+    }
   }
 
   Future<void> _showClearAllDialog(BuildContext context, WidgetRef ref) async {

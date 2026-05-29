@@ -37,7 +37,7 @@ class SavedListsScreen extends ConsumerWidget {
             return TabBarView(
               children: [
                 _buildTemplateList(context, ref, templates),
-                _buildHistoryList(context, history),
+                _buildHistoryList(context, ref, history),
               ],
             );
           },
@@ -91,9 +91,18 @@ class SavedListsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHistoryList(BuildContext context, List<ShoppingList> history) {
+  Widget _buildHistoryList(
+      BuildContext context, WidgetRef ref, List<ShoppingList> history) {
     if (history.isEmpty) {
-      return const Center(child: Text('Nenhuma compra finalizada ainda.'));
+      return RefreshIndicator(
+        onRefresh: () async => ref.refresh(savedListsProvider.future),
+        child: ListView(
+          children: const [
+            SizedBox(height: 200),
+            Center(child: Text('Nenhuma compra finalizada ainda.')),
+          ],
+        ),
+      );
     }
 
     // Sort by date descending
@@ -101,12 +110,7 @@ class SavedListsScreen extends ConsumerWidget {
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return RefreshIndicator(
-      onRefresh: () async {
-        // ConsumerWidget can't directly read ref in builder without passing it
-        // We'll use a hack or just pass ref. Wait, we don't have ref here.
-        // Actually, we can just return a Future.value since history list is read-only
-        // and pull-to-refresh will be handled by the other tab or we can pass ref.
-      },
+      onRefresh: () async => ref.refresh(savedListsProvider.future),
       child: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: sortedHistory.length,
