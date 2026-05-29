@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Listaí** — Flutter mobile app for supermarket shopping management. Planning → execution → analytics flow with offline-first support and AI nutritionist chat.
 
+## Status
+
+Progress tracked in `TODO.md` (phases 0–9). Done: **Fase 0–6** — domain, Drift persistence, list UI, advanced features (photo/substitute/budget/clear-undo), Supabase backend + auth + sync, analytics (charts + budget heatmap). **Pending: Fase 7** (export), **8** (AI chat), **9** (themes/i18n/a11y).
+
+Currently in **beta testing**: signed Android APKs shipped to testers via tagged GitHub Releases (see Build & Release). iOS not yet built (needs macOS/Xcode).
+
 ## Stack
 
 - **Flutter 3.16+** / Dart — Android + iOS only, bundle ID `com.listai.app`
@@ -17,38 +23,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **fl_chart** — analytics charts
 - AI providers: `Claude`, `OpenAI`, `Gemini` via abstract `AIProvider` interface
 
-## Commands (once Flutter project is initialized)
+## Commands
 
 ```bash
-# Analyze
-dart analyze
+# Analyze (CI ignores infos/warnings for now; errors are fatal)
+flutter analyze
+flutter analyze --no-fatal-infos --no-fatal-warnings   # what CI runs
 
-# Format check
+# Format check (CI gate — keep code formatted)
 dart format --set-exit-if-changed .
 
 # Run all tests
 flutter test
 
 # Run single test file
-flutter test test/unit/domain/shopping_item_test.dart
+flutter test test/unit/features/shopping_list/domain/entities/shopping_item_test.dart
 
-# Run widget tests
+# Run a folder (unit / widget / integration tests all live under test/)
 flutter test test/widget/
+flutter test test/integration/
 
-# Run integration tests
-flutter test integration_test/
+# Build (release APK is signed via key.properties — see Build & Release)
+flutter build apk --release
 
-# Build
-flutter build apk          # Android debug
-flutter build appbundle    # Android release
-flutter build ios          # iOS release
-
-# Generate Drift DB code
+# Generate Drift DB code (after editing tables.dart)
 dart run build_runner build --delete-conflicting-outputs
 
-# Generate l10n
-flutter gen-l10n
+# Regenerate launcher icons / native splash (after changing assets/logo/)
+dart run flutter_launcher_icons
+dart run flutter_native_splash:create
 ```
+
+Tests live under `test/{unit,widget,integration}/` (not `integration_test/`).
 
 ## Architecture
 
@@ -64,7 +70,9 @@ Cross-cutting under `lib/core/`: constants, theme, localization, errors, network
 
 Shared widgets/providers under `lib/shared/`.
 
-l10n: `lib/l10n/app_pt.arb`, `app_en.arb`, `app_es.arb` — all user-facing strings go here, never hardcoded.
+l10n (Fase 9, not done yet): target is `lib/l10n/app_pt.arb`, `app_en.arb`, `app_es.arb`. Until then UI strings are hardcoded in pt-BR; new strings should still be written so they're easy to extract later.
+
+Feature dirs in use: `auth`, `shopping_list` (core), `budget_goal`, `analytics`, `photo_capture`, `settings`. Not yet built: `share_export`, `ai_chat`, `saved_lists` (history currently lives inside `shopping_list`).
 
 ## Key Domain Rules
 
@@ -73,6 +81,14 @@ l10n: `lib/l10n/app_pt.arb`, `app_en.arb`, `app_es.arb` — all user-facing stri
 - Each item can have one optional `substitute_item_id` (self-referential FK).
 - `is_wholesale` default quantity = 3 (configurable).
 - `photo_captured_at` timestamp is set automatically at camera capture time — never editable.
+
+## Gotchas (learned the hard way)
+
+- **Drift table names**: a `class FooTable extends Table` generates SQL table name `foo_table` (snake_case of the class, sufix kept). Raw `customSelect` queries must use `purchases_table` / `purchase_items_table`, NOT `purchases`. Mocked unit tests won't catch this — always add an in-memory integration test that runs the real SQL.
+- **Drift stores `DateTime` as unix SECONDS** (no `storeDateTimeValuesAsText`). In raw SQL compare against `millisecondsSinceEpoch ~/ 1000` and use `date(col, 'unixepoch')` (no `/1000`).
+- **Aggregates over an empty table return NULL** — wrap bare `SUM(...)` (no `GROUP BY`) in `COALESCE(..., 0)` before `row.read<int>`.
+- **Navigation is GoRouter only** — use `context.go` / `context.push`. Never `Navigator.pushNamed` (no `onGenerateRoute` registered; throws at runtime).
+- **`FutureProvider` caches** — list/history providers that must reflect fresh DB state use `FutureProvider.autoDispose` and/or `ref.invalidate(...)` after a mutation.
 
 ## Data Layer: Offline/Online Sync
 
@@ -129,9 +145,24 @@ Test tools: `test`, `mocktail`, `flutter_test`, `integration_test`, `golden_tool
 
 ## CI/CD (GitHub Actions)
 
-On PR: `dart analyze` + `dart format --set-exit-if-changed` + full test suite.
-On merge to `main`: build Android (apk + appbundle) + iOS release.
-Distribution: Firebase App Distribution (beta) → stores (prod).
+Two workflows in `.github/workflows/`:
+
+- **`ci.yml`** — on push/PR to `main`: `dart format --set-exit-if-changed` + `flutter analyze --no-fatal-infos --no-fatal-warnings` + `flutter test`.
+- **`release.yml`** — on push of a tag `v*`: tests → build signed APK → publish a GitHub Release with `listai-<tag>.apk` attached.
+
+To cut a release: bump `version:` in `pubspec.yaml`, commit, then `git tag vX.Y.Z -m "..." && git push origin vX.Y.Z`. The pipeline builds and publishes automatically.
+
+## Build & Release (Android signing)
+
+Release builds are signed with a project keystore (NOT the debug key) so testers can update in place.
+
+- `android/app/build.gradle.kts` reads signing from `android/key.properties` (local) or env vars `ANDROID_KEYSTORE_PATH/PASSWORD`, `ANDROID_KEY_ALIAS/PASSWORD` (CI). Falls back to debug signing when neither is present.
+- **Never commit**: `*.keystore`, `*.jks`, `key.properties` (all git-ignored).
+- CI signing comes from GitHub repo secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. The workflow base64-decodes the keystore to `android/app/release.keystore` at build time.
+- **The keystore is irreplaceable** — losing it means testers must uninstall to update. Keep a secure backup.
+- iOS: not built yet (requires macOS + Xcode). Future: TestFlight (beta) → App Store (prod). Android future prod path: Play Store via appbundle.
+
+Branding assets in `assets/logo/`: `app_icon.png` (symbol-only, white bg → launcher icon), `listai-logo-removebg.png` (transparent → splash + welcome screen).
 
 ## Observability
 

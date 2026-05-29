@@ -9,8 +9,10 @@ import 'package:listai/features/settings/presentation/screens/settings_screen.da
 import 'package:listai/features/shopping_list/domain/entities/shopping_item.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart';
 import 'package:listai/features/shopping_list/presentation/providers/current_list_provider.dart';
+import 'package:listai/features/shopping_list/presentation/providers/current_tab_provider.dart';
 import 'package:listai/core/utils/money.dart';
 import 'package:listai/core/utils/quantity.dart';
+import 'package:listai/features/analytics/presentation/providers/analytics_provider.dart';
 
 class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     implements CurrentListNotifier {
@@ -46,6 +48,21 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   void dispose() {
     super.dispose();
   }
+
+  @override
+  Future<void> createNewList(String name) async {}
+
+  @override
+  Future<void> renameList(String newName) async {}
+
+  @override
+  Future<void> updateMarketName(String? marketName) async {}
+
+  @override
+  Future<void> activateList(ShoppingList list) async {}
+
+  @override
+  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
 }
 
 class FakeOfflineNotifier extends OfflineModeNotifier {
@@ -61,11 +78,13 @@ class FakeOfflineNotifier extends OfflineModeNotifier {
 }
 
 void main() {
-  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier) {
+  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier, {int initialTab = 2}) {
     return ProviderScope(
       overrides: [
         currentListProvider.overrideWith((ref) => notifier),
+        currentTabIndexProvider.overrideWith((ref) => initialTab),
         isOfflineModeProvider.overrideWith((ref) => FakeOfflineNotifier(true)),
+        heatmapDataProvider.overrideWith((ref) async => const []),
       ],
       child: Consumer(
         builder: (context, ref, child) {
@@ -80,8 +99,8 @@ void main() {
     WidgetTester tester,
   ) async {
     final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
-    await tester.pumpAndSettle();
+    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 0));
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.byType(CurrentListScreen), findsOneWidget);
   });
@@ -89,8 +108,16 @@ void main() {
   testWidgets('tap on FAB navigates to ItemFormScreen in creation mode', (
     WidgetTester tester,
   ) async {
-    final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    // Must have an active list for the FAB to navigate to /item/new
+    final list = ShoppingList(
+      id: '1',
+      name: 'Lista Teste',
+      items: [],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
     await tester.pumpAndSettle();
 
     final fab = find.byType(FloatingActionButton);
@@ -104,8 +131,16 @@ void main() {
   testWidgets('back button from ItemFormScreen returns to CurrentListScreen', (
     WidgetTester tester,
   ) async {
-    final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    // Must have an active list for the FAB to navigate to /item/new
+    final list = ShoppingList(
+      id: '1',
+      name: 'Lista Teste',
+      items: [],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
     await tester.pumpAndSettle();
 
     // Go to ItemFormScreen
@@ -141,7 +176,7 @@ void main() {
     );
 
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
     await tester.pumpAndSettle();
 
     // Tap on the item card (ListTile)
@@ -158,12 +193,24 @@ void main() {
   testWidgets('tap on settings icon navigates to SettingsScreen', (
     WidgetTester tester,
   ) async {
-    final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    // Use active list to avoid the no-list heatmap pumpAndSettle timeout
+    final list = ShoppingList(
+      id: '1',
+      name: 'Lista Teste',
+      items: [],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
     await tester.pumpAndSettle();
 
-    final settingsButton = find.byIcon(Icons.settings);
-    await tester.tap(settingsButton);
+    // Open the popup menu
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+
+    // Tap "Configurações" option
+    await tester.tap(find.text('Configurações').last);
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsScreen), findsOneWidget);

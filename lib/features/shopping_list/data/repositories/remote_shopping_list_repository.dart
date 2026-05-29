@@ -157,7 +157,6 @@ class RemoteShoppingListRepository implements ShoppingListRepository {
       final listRows = await _supabaseClient
           .from('shopping_lists')
           .select()
-          .or('is_completed.eq.true,is_template.eq.true')
           .order('updated_at', ascending: false);
 
       final List<ShoppingList> lists = [];

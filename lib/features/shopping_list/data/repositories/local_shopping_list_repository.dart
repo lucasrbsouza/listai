@@ -55,9 +55,6 @@ class LocalShoppingListRepository implements ShoppingListRepository {
   Future<List<ShoppingList>> getSavedLists() async {
     final rows =
         await (_db.select(_db.shoppingListsTable)
-              ..where(
-                (t) => t.isCompleted.equals(true) | t.isTemplate.equals(true),
-              )
               ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
             .get();
 

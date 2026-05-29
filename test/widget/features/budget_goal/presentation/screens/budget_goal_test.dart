@@ -9,6 +9,8 @@ import 'package:listai/features/shopping_list/presentation/providers/current_lis
 import 'package:listai/features/shopping_list/presentation/screens/current_list_screen.dart';
 import 'package:listai/core/utils/money.dart';
 import 'package:listai/core/utils/quantity.dart';
+import 'package:listai/features/analytics/presentation/providers/analytics_provider.dart';
+import 'package:listai/features/shopping_list/presentation/providers/current_tab_provider.dart';
 
 class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     implements CurrentListNotifier {
@@ -72,12 +74,31 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   void updateState(ShoppingList newList) {
     state = AsyncValue.data(newList);
   }
+
+  @override
+  Future<void> createNewList(String name) async {}
+
+  @override
+  Future<void> renameList(String newName) async {}
+
+  @override
+  Future<void> updateMarketName(String? marketName) async {}
+
+  @override
+  Future<void> activateList(ShoppingList list) async {}
+
+  @override
+  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
 }
 
 void main() {
-  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier) {
+  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier, {int initialTab = 2}) {
     return ProviderScope(
-      overrides: [currentListProvider.overrideWith((ref) => notifier)],
+      overrides: [
+        currentListProvider.overrideWith((ref) => notifier),
+        currentTabIndexProvider.overrideWith((ref) => initialTab),
+        heatmapDataProvider.overrideWith((ref) async => const []),
+      ],
       child: MaterialApp.router(
         routerConfig: GoRouter(
           initialLocation: '/',
@@ -223,6 +244,11 @@ void main() {
     expect(find.textContaining('Você ultrapassou o orçamento'), findsOneWidget);
 
     await tester.tap(find.text('Finalizar agora'));
+    await tester.pumpAndSettle();
+
+    // Confirmation dialog appears
+    expect(find.text('Finalizar compra?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar Lista'));
     await tester.pumpAndSettle();
 
     expect(notifier.finalizePurchaseCalled, isTrue);

@@ -58,20 +58,52 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
     _history.addLast(current);
   }
 
+  /// Creates a brand-new list with the given [name].
+  /// Must be called before adding items.
+  Future<void> createNewList(String name) async {
+    final now = DateTime.now();
+    final newList = ShoppingList(
+      id: const Uuid().v4(),
+      name: name,
+      createdAt: now,
+      updatedAt: now,
+      items: [],
+    );
+    await _updateStateAndRepository(newList);
+  }
+
+  /// Renames the current list.
+  Future<void> renameList(String newName) async {
+    final currentList = state.value;
+    if (currentList == null) return;
+
+    _pushHistory(currentList);
+    final updatedList = currentList.copyWith(name: newName);
+    await _updateStateAndRepository(updatedList);
+  }
+
+  /// Updates the market name for the current list.
+  Future<void> updateMarketName(String? marketName) async {
+    final currentList = state.value;
+    if (currentList == null) return;
+
+    _pushHistory(currentList);
+    final updatedList = currentList.copyWith(
+      marketName: marketName,
+      clearMarketName: marketName == null || marketName.isEmpty,
+    );
+    await _updateStateAndRepository(updatedList);
+  }
+
   Future<void> addItem(ShoppingItem item) async {
-    var currentList = state.value;
+    final currentList = state.value;
     if (currentList == null) {
-      final now = DateTime.now();
-      currentList = ShoppingList(
-        id: const Uuid().v4(),
-        name: 'Minha Lista',
-        createdAt: now,
-        updatedAt: now,
-        items: [],
+      throw StateError(
+        'Cannot add item without a list. Call createNewList() first.',
       );
-    } else {
-      _pushHistory(currentList);
     }
+
+    _pushHistory(currentList);
 
     final updatedItems = List<ShoppingItem>.from(currentList.items)..add(item);
     final updatedList = currentList.copyWith(items: updatedItems);
@@ -83,19 +115,14 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
     required ShoppingItem main,
     required ShoppingItem substitute,
   }) async {
-    var currentList = state.value;
+    final currentList = state.value;
     if (currentList == null) {
-      final now = DateTime.now();
-      currentList = ShoppingList(
-        id: const Uuid().v4(),
-        name: 'Minha Lista',
-        createdAt: now,
-        updatedAt: now,
-        items: [],
+      throw StateError(
+        'Cannot add item without a list. Call createNewList() first.',
       );
-    } else {
-      _pushHistory(currentList);
     }
+
+    _pushHistory(currentList);
 
     final mainPosition = currentList.items.length;
     final linkedMain = main.copyWith(
@@ -263,6 +290,39 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
 
     await _updateStateAndRepository(newList);
   }
+
+  /// Sets an existing uncompleted list as the current active list
+  /// by updating its updatedAt timestamp.
+  Future<void> activateList(ShoppingList list) async {
+    final updatedList = list.copyWith(updatedAt: DateTime.now());
+    await _updateStateAndRepository(updatedList);
+  }
+
+  /// Duplicates any list (active, template, or completed) and uses it as the new current active list.
+  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {
+    final DateTime now = DateTime.now();
+    const uuid = Uuid();
+
+    final newItems = list.items
+        .map((i) => i.copyWith(
+              id: uuid.v4(),
+              clearSubstituteItemId: i.substituteItemId == null,
+            ))
+        .toList();
+
+    final newList = ShoppingList(
+      id: uuid.v4(),
+      name: newName ?? '${list.name} (Cópia)',
+      items: newItems,
+      isTemplate: false,
+      isCompleted: false,
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    await _updateStateAndRepository(newList);
+  }
+
 
   Future<void> updateBudgetGoal(Money? budgetGoal) async {
     final currentList = state.value;

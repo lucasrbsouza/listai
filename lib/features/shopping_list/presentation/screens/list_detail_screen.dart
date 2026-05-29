@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart';
-import 'package:listai/core/utils/money.dart';
 import 'package:intl/intl.dart';
 
 class ListDetailScreen extends StatelessWidget {

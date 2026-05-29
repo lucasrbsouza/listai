@@ -401,4 +401,122 @@ void main() {
       sub.close();
     },
   );
+
+  test('createNewList creates a list with the given name', () async {
+    when(
+      () => mockRepository.watchCurrentList(),
+    ).thenAnswer((_) => Stream.value(null));
+    when(() => mockRepository.saveCurrentList(any())).thenAnswer((_) async {});
+
+    final sub = container.listen(currentListProvider, (_, __) {});
+    await Future<void>.delayed(Duration.zero);
+
+    // State should initially be null (no list)
+    expect(container.read(currentListProvider).value, isNull);
+
+    await container
+        .read(currentListProvider.notifier)
+        .createNewList('Compras da semana');
+
+    final newList = container.read(currentListProvider).value!;
+    expect(newList.name, 'Compras da semana');
+    expect(newList.items, isEmpty);
+    verify(() => mockRepository.saveCurrentList(any())).called(1);
+    sub.close();
+  });
+
+  test('renameList updates the list name', () async {
+    final list = _createEmptyList();
+    when(
+      () => mockRepository.watchCurrentList(),
+    ).thenAnswer((_) => Stream.value(list));
+    when(() => mockRepository.saveCurrentList(any())).thenAnswer((_) async {});
+
+    final sub = container.listen(currentListProvider, (_, __) {});
+    await Future<void>.delayed(Duration.zero);
+
+    expect(container.read(currentListProvider).value!.name, 'Minha Lista');
+
+    await container
+        .read(currentListProvider.notifier)
+        .renameList('Lista do Mês');
+
+    final renamed = container.read(currentListProvider).value!;
+    expect(renamed.name, 'Lista do Mês');
+    verify(() => mockRepository.saveCurrentList(any())).called(1);
+    sub.close();
+  });
+
+  test('renameList does nothing when current list is null', () async {
+    when(
+      () => mockRepository.watchCurrentList(),
+    ).thenAnswer((_) => Stream.value(null));
+    when(() => mockRepository.saveCurrentList(any())).thenAnswer((_) async {});
+
+    final sub = container.listen(currentListProvider, (_, __) {});
+    await Future<void>.delayed(Duration.zero);
+
+    await container
+        .read(currentListProvider.notifier)
+        .renameList('Novo Nome');
+
+    verifyNever(() => mockRepository.saveCurrentList(any()));
+    sub.close();
+  });
+
+  test('updateMarketName sets the market name', () async {
+    final list = _createEmptyList();
+    when(
+      () => mockRepository.watchCurrentList(),
+    ).thenAnswer((_) => Stream.value(list));
+    when(() => mockRepository.saveCurrentList(any())).thenAnswer((_) async {});
+
+    final sub = container.listen(currentListProvider, (_, __) {});
+    await Future<void>.delayed(Duration.zero);
+
+    await container
+        .read(currentListProvider.notifier)
+        .updateMarketName('Pão de Açúcar');
+
+    final updated = container.read(currentListProvider).value!;
+    expect(updated.marketName, 'Pão de Açúcar');
+    verify(() => mockRepository.saveCurrentList(any())).called(1);
+    sub.close();
+  });
+
+  test('updateMarketName clears market name when null', () async {
+    final list = _createEmptyList();
+    when(
+      () => mockRepository.watchCurrentList(),
+    ).thenAnswer((_) => Stream.value(list));
+    when(() => mockRepository.saveCurrentList(any())).thenAnswer((_) async {});
+
+    final sub = container.listen(currentListProvider, (_, __) {});
+    await Future<void>.delayed(Duration.zero);
+
+    await container
+        .read(currentListProvider.notifier)
+        .updateMarketName(null);
+
+    final updated = container.read(currentListProvider).value!;
+    expect(updated.marketName, isNull);
+    verify(() => mockRepository.saveCurrentList(any())).called(1);
+    sub.close();
+  });
+
+  test('addItem throws StateError when no list exists', () async {
+    when(
+      () => mockRepository.watchCurrentList(),
+    ).thenAnswer((_) => Stream.value(null));
+
+    final sub = container.listen(currentListProvider, (_, __) {});
+    await Future<void>.delayed(Duration.zero);
+
+    final item = _createItem('item-1');
+    expect(
+      () => container.read(currentListProvider.notifier).addItem(item),
+      throwsStateError,
+    );
+    sub.close();
+  });
 }

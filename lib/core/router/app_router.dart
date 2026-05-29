@@ -9,6 +9,7 @@ import 'package:listai/features/settings/presentation/screens/settings_screen.da
 
 import 'package:listai/features/shopping_list/presentation/screens/saved_lists_screen.dart';
 import 'package:listai/features/shopping_list/presentation/screens/list_detail_screen.dart';
+import 'package:listai/features/shopping_list/presentation/screens/history_screen.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart';
 
 import 'package:listai/features/auth/presentation/screens/welcome_screen.dart';
@@ -88,6 +89,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/saved',
         builder: (context, state) => const SavedListsScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const HistoryScreen(),
       ),
       GoRoute(
         path: '/saved/:id',

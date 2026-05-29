@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_item.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart';
 import 'package:listai/features/shopping_list/presentation/providers/current_list_provider.dart';
+import 'package:listai/features/shopping_list/presentation/providers/current_tab_provider.dart';
 import 'package:listai/features/shopping_list/presentation/screens/current_list_screen.dart';
 import 'package:listai/core/utils/money.dart';
 import 'package:listai/core/utils/quantity.dart';
+import 'package:listai/features/analytics/presentation/providers/analytics_provider.dart';
 
 class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     implements CurrentListNotifier {
@@ -81,12 +83,31 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   void dispose() {
     super.dispose();
   }
+
+  @override
+  Future<void> createNewList(String name) async {}
+
+  @override
+  Future<void> renameList(String newName) async {}
+
+  @override
+  Future<void> updateMarketName(String? marketName) async {}
+
+  @override
+  Future<void> activateList(ShoppingList list) async {}
+
+  @override
+  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
 }
 
 void main() {
-  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier) {
+  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier, {int initialTab = 2}) {
     return ProviderScope(
-      overrides: [currentListProvider.overrideWith((ref) => notifier)],
+      overrides: [
+        currentListProvider.overrideWith((ref) => notifier),
+        currentTabIndexProvider.overrideWith((ref) => initialTab),
+        heatmapDataProvider.overrideWith((ref) async => const []),
+      ],
       child: MaterialApp.router(
         routerConfig: GoRouter(
           initialLocation: '/',
@@ -152,24 +173,25 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('renders empty state message when list is null', (
+  testWidgets('renders no-list state message when list is null', (
     WidgetTester tester,
   ) async {
     final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 0));
+    await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Nenhuma lista atual.'), findsOneWidget);
-    expect(find.text('Adicione um item para começar.'), findsOneWidget);
+    expect(find.text('Usar uma lista já existente ou criar uma nova lista'), findsOneWidget);
+    expect(find.text('Criar Nova Lista'), findsOneWidget);
   });
 
-  testWidgets('renders empty state message when list has no items', (
+  testWidgets('renders empty list state message when list has no items', (
     WidgetTester tester,
   ) async {
     final list = createList(name: 'Minha Lista', marketName: 'Mercado');
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
     await tester.pumpWidget(createWidgetUnderTest(notifier));
 
-    expect(find.text('Nenhuma lista atual.'), findsOneWidget);
+    expect(find.text('Lista vazia.'), findsOneWidget);
   });
 
   testWidgets('renders list with items', (WidgetTester tester) async {
@@ -192,7 +214,7 @@ void main() {
     expect(find.text('Mercearia'), findsOneWidget);
     expect(find.text('2.0 un. × R\$ 5,50'), findsOneWidget);
     expect(find.text('R\$ 11,00'), findsNWidgets(2));
-    // Header check
+    // Header check - market name should be visible
     expect(find.text('Mercado'), findsOneWidget);
   });
 
@@ -333,6 +355,8 @@ void main() {
     await tester.pumpWidget(createWidgetUnderTest(notifier));
     await tester.tap(find.text('Mostrar substituto'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Trocar com principal'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Trocar com principal'));
     await tester.pumpAndSettle();
 
@@ -356,7 +380,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [currentListProvider.overrideWith((ref) => notifier)],
+        overrides: [
+          currentListProvider.overrideWith((ref) => notifier),
+          currentTabIndexProvider.overrideWith((ref) => 2),
+        ],
         child: MaterialApp.router(
           routerConfig: GoRouter(
             initialLocation: '/',
@@ -417,7 +444,7 @@ void main() {
     expect(notifier.undoCalled, isTrue);
   });
 
-  testWidgets('tap on FAB navigates or triggers action', (
+  testWidgets('tap on Criar tab triggers list creation dialog', (
     WidgetTester tester,
   ) async {
     final list = createList(name: 'Lista', marketName: 'Mercado', items: []);
@@ -425,12 +452,10 @@ void main() {
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));
 
-    final fab = find.byType(FloatingActionButton);
-    expect(fab, findsOneWidget);
+    final createButton = find.text('Criar');
+    expect(createButton, findsOneWidget);
 
-    // In Passo 3.2 FAB might just print or not navigate since adding items is 3.3
-    // We just ensure it exists and can be tapped.
-    await tester.tap(fab);
+    await tester.tap(createButton);
     await tester.pump();
   });
 
@@ -450,7 +475,7 @@ void main() {
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));
 
-    expect(find.byTooltip('Adicionar item'), findsOneWidget);
+    expect(find.byTooltip('Criar lista'), findsOneWidget);
   });
 
   testWidgets('tap Limpar tudo shows dialog, Cancel does not clear list', (
@@ -476,8 +501,8 @@ void main() {
     await tester.tap(find.byIcon(Icons.more_vert));
     await tester.pumpAndSettle();
 
-    // Tap "Limpar tudo" option
-    await tester.tap(find.text('Limpar tudo'));
+    // Tap "Limpar tudo" option (it's inside a Row now)
+    await tester.tap(find.text('Limpar tudo').last);
     await tester.pumpAndSettle();
 
     // Verify dialog appears
@@ -513,7 +538,7 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Limpar tudo'));
+      await tester.tap(find.text('Limpar tudo').last);
       await tester.pumpAndSettle();
 
       // Tap "Limpar tudo" in the dialog
@@ -556,7 +581,7 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Limpar tudo'));
+      await tester.tap(find.text('Limpar tudo').last);
       await tester.pumpAndSettle();
 
       // Tap "Salvar como template antes de limpar"
@@ -594,8 +619,8 @@ void main() {
     // Confirmation dialog appears
     expect(find.text('Finalizar compra?'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Finalizar'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar Lista'));
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(notifier.finalizePurchaseCalled, isTrue);
   });

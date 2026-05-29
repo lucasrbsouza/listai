@@ -63,6 +63,21 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   void dispose() {
     super.dispose();
   }
+
+  @override
+  Future<void> createNewList(String name) async {}
+
+  @override
+  Future<void> renameList(String newName) async {}
+
+  @override
+  Future<void> updateMarketName(String? marketName) async {}
+
+  @override
+  Future<void> activateList(ShoppingList list) async {}
+
+  @override
+  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
 }
 
 class FakePhotoRepository implements PhotoRepository {
