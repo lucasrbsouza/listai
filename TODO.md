@@ -57,10 +57,10 @@
 - [x] **Passo 5.2** — RemoteShoppingListRepository
 - [x] **Passo 5.3** — SyncManager (offline ↔ online)
 
-## Fase 6 — Analytics
+## CONCLUIDO Fase 6 — Analytics
 
-- [ ] **Passo 6.1** — Tela de gráficos (semana/mês/ano)
-- [ ] **Passo 6.2** — Heatmap de Metas (estilo GitHub Commits)
+- [x] **Passo 6.1** — Tela de gráficos (semana/mês/ano)
+- [x] **Passo 6.2** — Heatmap de Metas (estilo GitHub Commits)
 
 ## Fase 7 — Exportação
 
