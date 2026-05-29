@@ -5,7 +5,6 @@ import 'shopping_item.dart';
 
 @immutable
 class ShoppingList {
-
   factory ShoppingList({
     required final String id,
     final String? userId,
@@ -70,14 +69,13 @@ class ShoppingList {
   final DateTime updatedAt;
 
   Money get totalPrice => items.fold(
-        const Money.zero(),
-        (final total, final item) => total + item.totalPrice,
-      );
+    const Money.zero(),
+    (final total, final item) => total + item.totalPrice,
+  );
 
   int get itemCount => items.length;
 
-  bool get exceedsBudget =>
-      budgetGoal != null && totalPrice > budgetGoal!;
+  bool get exceedsBudget => budgetGoal != null && totalPrice > budgetGoal!;
 
   Money get amountOverBudget {
     if (!exceedsBudget) return const Money.zero();

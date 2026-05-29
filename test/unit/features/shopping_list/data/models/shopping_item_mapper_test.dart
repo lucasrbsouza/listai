@@ -24,26 +24,25 @@ void main() {
     String id = 'item-1',
     String listId = 'list-1',
     int position = 0,
-  }) =>
-      ShoppingItemsTableData(
-        id: id,
-        listId: listId,
-        productType: 'Padaria',
-        productName: 'Pão de forma',
-        brand: 'Pullman',
-        quantityValue: 2.0,
-        unitPriceCents: 599,
-        isWholesale: false,
-        isWeightBased: false,
-        pricePerKgCents: null,
-        weightKg: null,
-        photoUrl: null,
-        photoCapturedAt: null,
-        substituteItemId: null,
-        position: position,
-        createdAt: baseDate,
-        syncStatus: 'synced',
-      );
+  }) => ShoppingItemsTableData(
+    id: id,
+    listId: listId,
+    productType: 'Padaria',
+    productName: 'Pão de forma',
+    brand: 'Pullman',
+    quantityValue: 2.0,
+    unitPriceCents: 599,
+    isWholesale: false,
+    isWeightBased: false,
+    pricePerKgCents: null,
+    weightKg: null,
+    photoUrl: null,
+    photoCapturedAt: null,
+    substituteItemId: null,
+    position: position,
+    createdAt: baseDate,
+    syncStatus: 'synced',
+  );
 
   group('ShoppingItemMapper.toEntity', () {
     test('converts retail row to entity correctly', () {
@@ -177,7 +176,10 @@ void main() {
   group('ShoppingItemMapper.toCompanion', () {
     test('converts retail entity to companion correctly', () {
       final entity = makeRetailItem();
-      final companion = ShoppingItemMapper.toCompanion(entity, listId: 'list-1');
+      final companion = ShoppingItemMapper.toCompanion(
+        entity,
+        listId: 'list-1',
+      );
 
       expect(companion.id.value, 'item-1');
       expect(companion.listId.value, 'list-1');
@@ -201,8 +203,10 @@ void main() {
         createdAt: baseDate,
       );
 
-      final companion =
-          ShoppingItemMapper.toCompanion(entity, listId: 'list-1');
+      final companion = ShoppingItemMapper.toCompanion(
+        entity,
+        listId: 'list-1',
+      );
       expect(companion.brand.value, isNull);
       expect(companion.pricePerKgCents.value, isNull);
       expect(companion.weightKg.value, isNull);
@@ -222,8 +226,10 @@ void main() {
         createdAt: baseDate,
       );
 
-      final companion =
-          ShoppingItemMapper.toCompanion(entity, listId: 'list-1');
+      final companion = ShoppingItemMapper.toCompanion(
+        entity,
+        listId: 'list-1',
+      );
       expect(companion.isWeightBased.value, true);
       expect(companion.pricePerKgCents.value, 8000);
       expect(companion.weightKg.value, 0.5);
@@ -233,8 +239,10 @@ void main() {
   group('ShoppingItemMapper round-trip', () {
     test('retail item round-trips without data loss', () {
       final original = makeRetailItem();
-      final companion =
-          ShoppingItemMapper.toCompanion(original, listId: 'list-1');
+      final companion = ShoppingItemMapper.toCompanion(
+        original,
+        listId: 'list-1',
+      );
       final row = ShoppingItemsTableData(
         id: companion.id.value,
         listId: companion.listId.value,
@@ -281,8 +289,10 @@ void main() {
         createdAt: baseDate,
       );
 
-      final companion =
-          ShoppingItemMapper.toCompanion(original, listId: 'list-1');
+      final companion = ShoppingItemMapper.toCompanion(
+        original,
+        listId: 'list-1',
+      );
       final row = ShoppingItemsTableData(
         id: companion.id.value,
         listId: companion.listId.value,

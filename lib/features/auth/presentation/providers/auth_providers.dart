@@ -13,10 +13,16 @@ class FakeAuthRepository implements AuthRepository {
   Stream<User?> authStateChanges() => Stream.value(null);
 
   @override
-  Future<User?> signInWithEmail(final String email, final String password) async => null;
+  Future<User?> signInWithEmail(
+    final String email,
+    final String password,
+  ) async => null;
 
   @override
-  Future<User?> signUpWithEmail(final String email, final String password) async => null;
+  Future<User?> signUpWithEmail(
+    final String email,
+    final String password,
+  ) async => null;
 
   @override
   Future<void> signOut() async {}
@@ -53,6 +59,8 @@ class OfflineModeNotifier extends StateNotifier<bool> {
   }
 }
 
-final isOfflineModeProvider = StateNotifierProvider<OfflineModeNotifier, bool>((ref) {
+final isOfflineModeProvider = StateNotifierProvider<OfflineModeNotifier, bool>((
+  ref,
+) {
   return OfflineModeNotifier();
 });

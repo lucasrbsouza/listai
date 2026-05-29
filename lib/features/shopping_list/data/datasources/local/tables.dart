@@ -19,14 +19,16 @@ class ShoppingListsTable extends Table {
 
 class ShoppingItemsTable extends Table {
   TextColumn get id => text()();
-  TextColumn get listId => text().references(ShoppingListsTable, #id, onDelete: KeyAction.cascade)();
+  TextColumn get listId =>
+      text().references(ShoppingListsTable, #id, onDelete: KeyAction.cascade)();
   TextColumn get productType => text()();
   TextColumn get productName => text()();
   TextColumn get brand => text().nullable()();
   RealColumn get quantityValue => real()();
   IntColumn get unitPriceCents => integer()();
   BoolColumn get isWholesale => boolean().withDefault(const Constant(false))();
-  BoolColumn get isWeightBased => boolean().withDefault(const Constant(false))();
+  BoolColumn get isWeightBased =>
+      boolean().withDefault(const Constant(false))();
   IntColumn get pricePerKgCents => integer().nullable()();
   RealColumn get weightKg => real().nullable()();
   TextColumn get photoUrl => text().nullable()();
@@ -47,7 +49,8 @@ class PurchasesTable extends Table {
   TextColumn get marketName => text().nullable()();
   IntColumn get totalAmountCents => integer()();
   IntColumn get budgetGoalCents => integer().nullable()();
-  BoolColumn get exceededBudget => boolean().withDefault(const Constant(false))();
+  BoolColumn get exceededBudget =>
+      boolean().withDefault(const Constant(false))();
   DateTimeColumn get completedAt => dateTime()();
 
   @override

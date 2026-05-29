@@ -6,9 +6,13 @@ import 'package:listai/core/errors/failures.dart';
 import 'package:listai/features/auth/data/auth_repository.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockGoTrueClient extends Mock implements GoTrueClient {}
+
 class MockUser extends Mock implements User {}
+
 class MockAuthResponse extends Mock implements AuthResponse {}
+
 class MockSession extends Mock implements Session {}
 
 void main() {
@@ -19,7 +23,7 @@ void main() {
   setUp(() {
     mockSupabaseClient = MockSupabaseClient();
     mockGoTrueClient = MockGoTrueClient();
-    
+
     when(() => mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
     authRepository = SupabaseAuthRepository(mockSupabaseClient);
   });
@@ -33,37 +37,53 @@ void main() {
       final mockAuthResponse = MockAuthResponse();
 
       when(() => mockAuthResponse.user).thenReturn(mockUser);
-      when(() => mockGoTrueClient.signInWithPassword(
-        email: email,
-        password: password,
-      )).thenAnswer((_) async => mockAuthResponse);
+      when(
+        () => mockGoTrueClient.signInWithPassword(
+          email: email,
+          password: password,
+        ),
+      ).thenAnswer((_) async => mockAuthResponse);
 
       final result = await authRepository.signInWithEmail(email, password);
 
       expect(result, mockUser);
-      verify(() => mockGoTrueClient.signInWithPassword(
-        email: email,
-        password: password,
-      )).called(1);
+      verify(
+        () => mockGoTrueClient.signInWithPassword(
+          email: email,
+          password: password,
+        ),
+      ).called(1);
     });
 
     test('throws AuthFailure on AuthException with generic message', () async {
-      when(() => mockGoTrueClient.signInWithPassword(
-        email: email,
-        password: password,
-      )).thenThrow(const AuthException('Invalid login credentials', statusCode: '400'));
+      when(
+        () => mockGoTrueClient.signInWithPassword(
+          email: email,
+          password: password,
+        ),
+      ).thenThrow(
+        const AuthException('Invalid login credentials', statusCode: '400'),
+      );
 
       expect(
         () => authRepository.signInWithEmail(email, password),
-        throwsA(isA<AuthFailure>().having((e) => e.message, 'message', 'Credenciais inválidas')),
+        throwsA(
+          isA<AuthFailure>().having(
+            (e) => e.message,
+            'message',
+            'Credenciais inválidas',
+          ),
+        ),
       );
     });
 
     test('throws NetworkFailure on standard format exception', () async {
-      when(() => mockGoTrueClient.signInWithPassword(
-        email: email,
-        password: password,
-      )).thenThrow(const FormatException('Connection failed'));
+      when(
+        () => mockGoTrueClient.signInWithPassword(
+          email: email,
+          password: password,
+        ),
+      ).thenThrow(const FormatException('Connection failed'));
 
       expect(
         () => authRepository.signInWithEmail(email, password),
@@ -81,25 +101,22 @@ void main() {
       final mockAuthResponse = MockAuthResponse();
 
       when(() => mockAuthResponse.user).thenReturn(mockUser);
-      when(() => mockGoTrueClient.signUp(
-        email: email,
-        password: password,
-      )).thenAnswer((_) async => mockAuthResponse);
+      when(
+        () => mockGoTrueClient.signUp(email: email, password: password),
+      ).thenAnswer((_) async => mockAuthResponse);
 
       final result = await authRepository.signUpWithEmail(email, password);
 
       expect(result, mockUser);
-      verify(() => mockGoTrueClient.signUp(
-        email: email,
-        password: password,
-      )).called(1);
+      verify(
+        () => mockGoTrueClient.signUp(email: email, password: password),
+      ).called(1);
     });
 
     test('throws AuthFailure on AuthException', () async {
-      when(() => mockGoTrueClient.signUp(
-        email: email,
-        password: password,
-      )).thenThrow(const AuthException('Email already in use'));
+      when(
+        () => mockGoTrueClient.signUp(email: email, password: password),
+      ).thenThrow(const AuthException('Email already in use'));
 
       expect(
         () => authRepository.signUpWithEmail(email, password),
@@ -118,7 +135,9 @@ void main() {
     });
 
     test('throws NetworkFailure on exception', () async {
-      when(() => mockGoTrueClient.signOut()).thenThrow(const FormatException('Network error'));
+      when(
+        () => mockGoTrueClient.signOut(),
+      ).thenThrow(const FormatException('Network error'));
 
       expect(() => authRepository.signOut(), throwsA(isA<NetworkFailure>()));
     });
@@ -153,7 +172,9 @@ void main() {
       final authState2 = AuthState(AuthChangeEvent.signedOut, null);
 
       final controller = StreamController<AuthState>();
-      when(() => mockGoTrueClient.onAuthStateChange).thenAnswer((_) => controller.stream);
+      when(
+        () => mockGoTrueClient.onAuthStateChange,
+      ).thenAnswer((_) => controller.stream);
 
       final stream = authRepository.authStateChanges();
 

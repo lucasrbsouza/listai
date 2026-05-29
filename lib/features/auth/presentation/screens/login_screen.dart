@@ -70,7 +70,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         context.go('/');
       }
     } catch (e) {
-      final message = e is Failure ? e.message : e.toString().replaceAll('Exception: ', '');
+      final message = e is Failure
+          ? e.message
+          : e.toString().replaceAll('Exception: ', '');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -167,7 +169,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     child: const Text(
                       'Entrar',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
               ],

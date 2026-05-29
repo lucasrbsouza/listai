@@ -25,17 +25,21 @@ void main() {
   });
 
   test('queries exactly 364 days ending at endDate', () async {
-    when(() => repo.getDailyBudgetStatus(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => []);
+    when(
+      () => repo.getDailyBudgetStatus(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => []);
 
     await useCase(endDate: refDate);
 
-    final captured = verify(() => repo.getDailyBudgetStatus(
-          startDate: captureAny(named: 'startDate'),
-          endDate: captureAny(named: 'endDate'),
-        )).captured;
+    final captured = verify(
+      () => repo.getDailyBudgetStatus(
+        startDate: captureAny(named: 'startDate'),
+        endDate: captureAny(named: 'endDate'),
+      ),
+    ).captured;
 
     final start = captured[0] as DateTime;
     final end = captured[1] as DateTime;
@@ -47,10 +51,12 @@ void main() {
 
   test('returns statuses from repository', () async {
     final statuses = _fixture365(refDate);
-    when(() => repo.getDailyBudgetStatus(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => statuses);
+    when(
+      () => repo.getDailyBudgetStatus(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => statuses);
 
     final result = await useCase(endDate: refDate);
 
@@ -58,32 +64,39 @@ void main() {
   });
 
   test('empty result when no purchases', () async {
-    when(() => repo.getDailyBudgetStatus(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => []);
+    when(
+      () => repo.getDailyBudgetStatus(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => []);
 
     final result = await useCase(endDate: refDate);
 
     expect(result, isEmpty);
   });
 
-  test('day with purchase within budget has hasPurchase=true exceeded=false', () async {
-    final day = DayStatus(
-      date: refDate,
-      totalSpent: Money.fromReais(50),
-      budgetGoal: Money.fromReais(100),
-    );
-    when(() => repo.getDailyBudgetStatus(
+  test(
+    'day with purchase within budget has hasPurchase=true exceeded=false',
+    () async {
+      final day = DayStatus(
+        date: refDate,
+        totalSpent: Money.fromReais(50),
+        budgetGoal: Money.fromReais(100),
+      );
+      when(
+        () => repo.getDailyBudgetStatus(
           startDate: any(named: 'startDate'),
           endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => [day]);
+        ),
+      ).thenAnswer((_) async => [day]);
 
-    final result = await useCase(endDate: refDate);
+      final result = await useCase(endDate: refDate);
 
-    expect(result.first.hasPurchase, isTrue);
-    expect(result.first.exceeded, isFalse);
-  });
+      expect(result.first.hasPurchase, isTrue);
+      expect(result.first.exceeded, isFalse);
+    },
+  );
 
   test('day with purchase exceeding budget has exceeded=true', () async {
     final day = DayStatus(
@@ -91,10 +104,12 @@ void main() {
       totalSpent: Money.fromReais(150),
       budgetGoal: Money.fromReais(100),
     );
-    when(() => repo.getDailyBudgetStatus(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => [day]);
+    when(
+      () => repo.getDailyBudgetStatus(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => [day]);
 
     final result = await useCase(endDate: refDate);
 
@@ -108,10 +123,12 @@ void main() {
   });
 
   test('uses today when endDate not provided', () async {
-    when(() => repo.getDailyBudgetStatus(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => []);
+    when(
+      () => repo.getDailyBudgetStatus(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => []);
 
     // Should not throw
     await useCase();

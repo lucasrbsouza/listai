@@ -4,11 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/analytics_entities.dart';
 
 class BudgetHeatmap extends StatelessWidget {
-  const BudgetHeatmap({
-    required this.statuses,
-    this.onDayTap,
-    super.key,
-  });
+  const BudgetHeatmap({required this.statuses, this.onDayTap, super.key});
 
   final List<DayStatus> statuses;
   final void Function(DayStatus)? onDayTap;
@@ -130,8 +126,9 @@ class _HeatmapPainter extends CustomPainter {
     if (budget == null) return _colorNoBudget;
 
     if (spent <= budget) {
-      final intensity =
-          budget.cents > 0 ? (spent.cents / budget.cents).clamp(0.1, 1.0) : 0.5;
+      final intensity = budget.cents > 0
+          ? (spent.cents / budget.cents).clamp(0.1, 1.0)
+          : 0.5;
       return Color.lerp(_colorGreenLight, _colorGreenDark, intensity)!;
     } else {
       final excess = (spent.cents - budget.cents).toDouble();

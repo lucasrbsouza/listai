@@ -56,10 +56,12 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> updateBudgetGoal(Money? budgetGoal) async {
     updatedBudgetGoal = budgetGoal;
     if (state.hasValue && state.value != null) {
-      state = AsyncValue.data(state.value!.copyWith(
-        budgetGoal: budgetGoal,
-        clearBudgetGoal: budgetGoal == null,
-      ));
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          budgetGoal: budgetGoal,
+          clearBudgetGoal: budgetGoal == null,
+        ),
+      );
     }
   }
 
@@ -105,7 +107,11 @@ void main() {
     );
   }
 
-  ShoppingItem createItem({required String id, required Money price, required double quantity}) {
+  ShoppingItem createItem({
+    required String id,
+    required Money price,
+    required double quantity,
+  }) {
     return ShoppingItem(
       id: id,
       productType: 'Mercearia',
@@ -117,9 +123,18 @@ void main() {
     );
   }
 
-  testWidgets('total changes color to red when budget is exceeded', (WidgetTester tester) async {
-    final item = createItem(id: 'item-1', price: Money.fromCents(1500), quantity: 1.0); // R$ 15,00
-    final list = createList(budgetGoal: Money.fromCents(1000), items: [item]); // Meta R$ 10,00
+  testWidgets('total changes color to red when budget is exceeded', (
+    WidgetTester tester,
+  ) async {
+    final item = createItem(
+      id: 'item-1',
+      price: Money.fromCents(1500),
+      quantity: 1.0,
+    ); // R$ 15,00
+    final list = createList(
+      budgetGoal: Money.fromCents(1000),
+      items: [item],
+    ); // Meta R$ 10,00
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));
@@ -127,7 +142,10 @@ void main() {
 
     // The total value "R$ 15,00" should be rendered in red color in the footer
     final totalTextFinder = find.byWidgetPredicate(
-      (widget) => widget is Text && widget.data == r'R$ 15,00' && widget.style?.fontSize == 22.0
+      (widget) =>
+          widget is Text &&
+          widget.data == r'R$ 15,00' &&
+          widget.style?.fontSize == 22.0,
     );
     expect(totalTextFinder, findsOneWidget);
 
@@ -136,46 +154,69 @@ void main() {
     expect(textWidget.style?.color, Theme.of(context).colorScheme.error);
   });
 
-  testWidgets('dialog appears when budget is exceeded for the first time and handles actions', (WidgetTester tester) async {
-    // Start within budget
-    final list = createList(budgetGoal: Money.fromCents(2000), items: []); // Meta R$ 20,00
-    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+  testWidgets(
+    'dialog appears when budget is exceeded for the first time and handles actions',
+    (WidgetTester tester) async {
+      // Start within budget
+      final list = createList(
+        budgetGoal: Money.fromCents(2000),
+        items: [],
+      ); // Meta R$ 20,00
+      final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createWidgetUnderTest(notifier));
+      await tester.pumpAndSettle();
 
-    // Verify no dialog is present
-    expect(find.textContaining('Você ultrapassou o orçamento'), findsNothing);
+      // Verify no dialog is present
+      expect(find.textContaining('Você ultrapassou o orçamento'), findsNothing);
 
-    // Add item that exceeds the budget
-    final item = createItem(id: 'item-1', price: Money.fromCents(2500), quantity: 1.0); // R$ 25,00
-    notifier.updateState(list.copyWith(items: [item]));
-    await tester.pumpAndSettle();
+      // Add item that exceeds the budget
+      final item = createItem(
+        id: 'item-1',
+        price: Money.fromCents(2500),
+        quantity: 1.0,
+      ); // R$ 25,00
+      notifier.updateState(list.copyWith(items: [item]));
+      await tester.pumpAndSettle();
 
-    // Dialog should appear
-    expect(find.textContaining('Você ultrapassou o orçamento'), findsOneWidget);
-    expect(find.text('Deseja finalizar as compras?'), findsOneWidget);
+      // Dialog should appear
+      expect(
+        find.textContaining('Você ultrapassou o orçamento'),
+        findsOneWidget,
+      );
+      expect(find.text('Deseja finalizar as compras?'), findsOneWidget);
 
-    // Tap "Continuar comprando" to dismiss dialog
-    await tester.tap(find.text('Continuar comprando'));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('Você ultrapassou o orçamento'), findsNothing);
+      // Tap "Continuar comprando" to dismiss dialog
+      await tester.tap(find.text('Continuar comprando'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Você ultrapassou o orçamento'), findsNothing);
 
-    // Add another item - dialog should NOT appear again (session prevention)
-    final item2 = createItem(id: 'item-2', price: Money.fromCents(500), quantity: 1.0); // R$ 5,00
-    notifier.updateState(list.copyWith(items: [item, item2]));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('Você ultrapassou o orçamento'), findsNothing);
-  });
+      // Add another item - dialog should NOT appear again (session prevention)
+      final item2 = createItem(
+        id: 'item-2',
+        price: Money.fromCents(500),
+        quantity: 1.0,
+      ); // R$ 5,00
+      notifier.updateState(list.copyWith(items: [item, item2]));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Você ultrapassou o orçamento'), findsNothing);
+    },
+  );
 
-  testWidgets('dialog "Finalizar agora" calls finalizePurchase', (WidgetTester tester) async {
+  testWidgets('dialog "Finalizar agora" calls finalizePurchase', (
+    WidgetTester tester,
+  ) async {
     final list = createList(budgetGoal: Money.fromCents(1000), items: []);
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));
     await tester.pumpAndSettle();
 
-    final item = createItem(id: 'item-1', price: Money.fromCents(1500), quantity: 1.0);
+    final item = createItem(
+      id: 'item-1',
+      price: Money.fromCents(1500),
+      quantity: 1.0,
+    );
     notifier.updateState(list.copyWith(items: [item]));
     await tester.pumpAndSettle();
 
@@ -187,8 +228,13 @@ void main() {
     expect(notifier.finalizePurchaseCalled, isTrue);
   });
 
-  testWidgets('can edit budget goal from the header', (WidgetTester tester) async {
-    final list = createList(budgetGoal: Money.fromCents(1000), items: []); // Meta R$ 10,00
+  testWidgets('can edit budget goal from the header', (
+    WidgetTester tester,
+  ) async {
+    final list = createList(
+      budgetGoal: Money.fromCents(1000),
+      items: [],
+    ); // Meta R$ 10,00
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));

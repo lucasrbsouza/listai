@@ -2,7 +2,6 @@ import 'package:meta/meta.dart';
 
 @immutable
 class Money {
-
   factory Money.fromCents(final int cents) {
     if (cents < 0) throw ArgumentError('Money cannot be negative: $cents');
     return Money._(cents);
@@ -46,10 +45,7 @@ class Money {
   @override
   int get hashCode => _cents.hashCode;
 
-  String format({
-    final String locale = 'pt-BR',
-    final String symbol = 'R\$',
-  }) {
+  String format({final String locale = 'pt-BR', final String symbol = 'R\$'}) {
     final intPart = _cents ~/ 100;
     final fracPart = _cents % 100;
     final fracStr = fracPart.toString().padLeft(2, '0');

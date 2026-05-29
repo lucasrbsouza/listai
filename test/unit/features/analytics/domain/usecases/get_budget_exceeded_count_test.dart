@@ -18,10 +18,12 @@ void main() {
 
   test('returns exceeded count from repository', () async {
     const result = BudgetExceededResult(exceededCount: 3, totalPurchases: 10);
-    when(() => repo.getBudgetExceededCount(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => result);
+    when(
+      () => repo.getBudgetExceededCount(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => result);
 
     final res = await useCase(AnalyticsPeriod.monthly, referenceDate: refDate);
 
@@ -31,10 +33,12 @@ void main() {
 
   test('zero purchases returns zero counts', () async {
     const result = BudgetExceededResult(exceededCount: 0, totalPurchases: 0);
-    when(() => repo.getBudgetExceededCount(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => result);
+    when(
+      () => repo.getBudgetExceededCount(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => result);
 
     final res = await useCase(AnalyticsPeriod.weekly, referenceDate: refDate);
 
@@ -44,10 +48,12 @@ void main() {
 
   test('exceeded cannot be greater than total', () async {
     const result = BudgetExceededResult(exceededCount: 5, totalPurchases: 10);
-    when(() => repo.getBudgetExceededCount(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async => result);
+    when(
+      () => repo.getBudgetExceededCount(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer((_) async => result);
 
     final res = await useCase(AnalyticsPeriod.yearly, referenceDate: refDate);
 
@@ -55,36 +61,48 @@ void main() {
   });
 
   test('uses correct date range for weekly period', () async {
-    when(() => repo.getBudgetExceededCount(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async =>
-        const BudgetExceededResult(exceededCount: 0, totalPurchases: 0));
+    when(
+      () => repo.getBudgetExceededCount(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer(
+      (_) async =>
+          const BudgetExceededResult(exceededCount: 0, totalPurchases: 0),
+    );
 
     await useCase(AnalyticsPeriod.weekly, referenceDate: refDate);
 
-    final captured = verify(() => repo.getBudgetExceededCount(
-          startDate: captureAny(named: 'startDate'),
-          endDate: captureAny(named: 'endDate'),
-        )).captured;
+    final captured = verify(
+      () => repo.getBudgetExceededCount(
+        startDate: captureAny(named: 'startDate'),
+        endDate: captureAny(named: 'endDate'),
+      ),
+    ).captured;
 
     final start = captured[0] as DateTime;
     expect(start, equals(DateTime(2024, 6, 9)));
   });
 
   test('uses correct date range for monthly period', () async {
-    when(() => repo.getBudgetExceededCount(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-        )).thenAnswer((_) async =>
-        const BudgetExceededResult(exceededCount: 0, totalPurchases: 0));
+    when(
+      () => repo.getBudgetExceededCount(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+      ),
+    ).thenAnswer(
+      (_) async =>
+          const BudgetExceededResult(exceededCount: 0, totalPurchases: 0),
+    );
 
     await useCase(AnalyticsPeriod.monthly, referenceDate: refDate);
 
-    final captured = verify(() => repo.getBudgetExceededCount(
-          startDate: captureAny(named: 'startDate'),
-          endDate: captureAny(named: 'endDate'),
-        )).captured;
+    final captured = verify(
+      () => repo.getBudgetExceededCount(
+        startDate: captureAny(named: 'startDate'),
+        endDate: captureAny(named: 'endDate'),
+      ),
+    ).captured;
 
     final start = captured[0] as DateTime;
     expect(start, equals(DateTime(2024, 5, 17)));

@@ -179,9 +179,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                       ? 'Meta: ${budgetGoal.format()}'
                       : 'Definir Meta',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -434,10 +434,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
     Money? currentBudget,
   ) async {
     final controller = TextEditingController(
-      text:
-          currentBudget != null
-              ? currentBudget.reais.toStringAsFixed(2).replaceAll('.', ',')
-              : '',
+      text: currentBudget != null
+          ? currentBudget.reais.toStringAsFixed(2).replaceAll('.', ',')
+          : '',
     );
     await showDialog(
       context: context,

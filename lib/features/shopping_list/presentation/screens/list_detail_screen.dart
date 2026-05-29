@@ -10,11 +10,17 @@ class ListDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(shoppingList.createdAt);
+    final dateStr = DateFormat(
+      'dd/MM/yyyy HH:mm',
+    ).format(shoppingList.createdAt);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(shoppingList.name.isNotEmpty ? shoppingList.name : 'Detalhes da Lista'),
+        title: Text(
+          shoppingList.name.isNotEmpty
+              ? shoppingList.name
+              : 'Detalhes da Lista',
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -22,27 +28,33 @@ class ListDetailScreen extends StatelessWidget {
           _buildHeader(context, dateStr),
           Expanded(
             child: shoppingList.items.isEmpty
-              ? const Center(child: Text('Esta lista não possui itens.'))
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: shoppingList.items.length,
-                  separatorBuilder: (_, __) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final item = shoppingList.items[index];
-                    return ListTile(
-                      title: Text(item.productName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(
-                        item.isWeightBased
-                            ? '\${item.quantity.format()} kg x \${item.unitPrice.format()} /kg'
-                            : '\${item.quantity.format()} un x \${item.unitPrice.format()}'
-                      ),
-                      trailing: Text(
-                        item.totalPrice.format(),
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    );
-                  },
-                ),
+                ? const Center(child: Text('Esta lista não possui itens.'))
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: shoppingList.items.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final item = shoppingList.items[index];
+                      return ListTile(
+                        title: Text(
+                          item.productName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          item.isWeightBased
+                              ? '\${item.quantity.format()} kg x \${item.unitPrice.format()} /kg'
+                              : '\${item.quantity.format()} un x \${item.unitPrice.format()}',
+                        ),
+                        trailing: Text(
+                          item.totalPrice.format(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
           _buildFooter(context),
         ],
@@ -60,12 +72,16 @@ class ListDetailScreen extends StatelessWidget {
           if (shoppingList.isTemplate)
             const Chip(label: Text('Template'))
           else ...[
-            Text('Data: \$dateStr', style: const TextStyle(fontWeight: FontWeight.bold)),
-            if (shoppingList.marketName != null && shoppingList.marketName!.isNotEmpty)
+            Text(
+              'Data: \$dateStr',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            if (shoppingList.marketName != null &&
+                shoppingList.marketName!.isNotEmpty)
               Text('Mercado: \${shoppingList.marketName}'),
             if (shoppingList.budgetGoal != null)
               Text('Meta de gastos: \${shoppingList.budgetGoal!.format()}'),
-          ]
+          ],
         ],
       ),
     );
@@ -74,7 +90,7 @@ class ListDetailScreen extends StatelessWidget {
   Widget _buildFooter(BuildContext context) {
     final total = shoppingList.totalPrice;
     final exceeded = shoppingList.exceedsBudget;
-    
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(

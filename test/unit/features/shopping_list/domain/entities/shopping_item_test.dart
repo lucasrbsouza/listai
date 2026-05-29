@@ -94,10 +94,8 @@ void main() {
 
     test('weight-based without weightKg throws', () {
       expect(
-        () => _makeItem(
-          isWeightBased: true,
-          pricePerKg: Money.fromReais(10.00),
-        ),
+        () =>
+            _makeItem(isWeightBased: true, pricePerKg: Money.fromReais(10.00)),
         throwsArgumentError,
       );
     });

@@ -20,9 +20,7 @@ void main() {
     final statuses = _buildStatuses();
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: statuses),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
       ),
     );
     await tester.pumpAndSettle();
@@ -34,9 +32,7 @@ void main() {
     final statuses = _buildStatuses();
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: statuses),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
       ),
     );
     await tester.pumpAndSettle();
@@ -53,9 +49,7 @@ void main() {
     final statuses = _buildStatuses();
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: statuses),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
       ),
     );
     await tester.pumpAndSettle();
@@ -67,16 +61,17 @@ void main() {
     final statuses = _buildStatuses(count: 7);
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: statuses),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(
       find.byWidgetPredicate(
-        (w) => w is Semantics && w.properties.label != null && w.properties.label!.isNotEmpty,
+        (w) =>
+            w is Semantics &&
+            w.properties.label != null &&
+            w.properties.label!.isNotEmpty,
       ),
       findsNWidgets(7),
     );
@@ -97,10 +92,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: BudgetHeatmap(
-            statuses: statuses,
-            onDayTap: (s) => tapped = s,
-          ),
+          body: BudgetHeatmap(statuses: statuses, onDayTap: (s) => tapped = s),
         ),
       ),
     );
@@ -114,26 +106,25 @@ void main() {
     expect(tapped!.date, equals(statuses[3].date));
   });
 
-  testWidgets('semantic label contains date for day without purchase', (tester) async {
+  testWidgets('semantic label contains date for day without purchase', (
+    tester,
+  ) async {
     final date = DateTime(2024, 6, 15);
     final statuses = [DayStatus(date: date)];
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: statuses),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.bySemanticsLabel(RegExp(r'15/06.*Sem compra')),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsLabel(RegExp(r'15/06.*Sem compra')), findsOneWidget);
   });
 
-  testWidgets('semantic label shows budget for day with exceeded purchase', (tester) async {
+  testWidgets('semantic label shows budget for day with exceeded purchase', (
+    tester,
+  ) async {
     final date = DateTime(2024, 6, 15);
     final statuses = [
       DayStatus(
@@ -145,25 +136,18 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: statuses),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.bySemanticsLabel(RegExp(r'15/06.*R\$')),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsLabel(RegExp(r'15/06.*R\$')), findsOneWidget);
   });
 
   testWidgets('empty statuses renders without error', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: BudgetHeatmap(statuses: []),
-        ),
+        home: Scaffold(body: BudgetHeatmap(statuses: [])),
       ),
     );
     await tester.pumpAndSettle();

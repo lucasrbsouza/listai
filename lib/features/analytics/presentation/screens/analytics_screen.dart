@@ -52,9 +52,8 @@ class AnalyticsScreen extends ConsumerWidget {
         ],
       ),
       body: analyticsAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: _kPrimary),
-        ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: _kPrimary)),
         error: (e, _) => Center(
           child: Text(
             'Erro ao carregar dados: $e',
@@ -62,10 +61,10 @@ class AnalyticsScreen extends ConsumerWidget {
           ),
         ),
         data: (data) => _AnalyticsBody(
-        data: data,
-        period: period,
-        heatmapStatuses: heatmapAsync.valueOrNull,
-      ),
+          data: data,
+          period: period,
+          heatmapStatuses: heatmapAsync.valueOrNull,
+        ),
       ),
     );
   }
@@ -128,14 +127,13 @@ class _AnalyticsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasAnyData = data.spendingPoints.isNotEmpty ||
+    final hasAnyData =
+        data.spendingPoints.isNotEmpty ||
         data.topMarkets.isNotEmpty ||
         data.mostBoughtProducts.isNotEmpty;
 
     if (!hasAnyData) {
-      return const Center(
-        child: _EmptyState(),
-      );
+      return const Center(child: _EmptyState());
     }
 
     return SingleChildScrollView(
@@ -143,45 +141,50 @@ class _AnalyticsBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-        _SpendingChartCard(points: data.spendingPoints, period: period),
-        const SizedBox(height: 16),
-        _BudgetIndicatorCard(result: data.budgetExceededResult),
-        const SizedBox(height: 16),
-        _HeatmapCard(statuses: heatmapStatuses),
-        const SizedBox(height: 16),
-        if (data.topMarkets.isNotEmpty) ...[
-          _TopMarketsCard(markets: data.topMarkets),
+          _SpendingChartCard(points: data.spendingPoints, period: period),
           const SizedBox(height: 16),
-        ],
-        if (data.mostBoughtProducts.isNotEmpty) ...[
-          _ProductListCard(
-            title: 'Produtos Mais Comprados',
-            icon: Icons.shopping_cart_outlined,
-            children: data.mostBoughtProducts
-                .map((p) => _ProductListTile(
+          _BudgetIndicatorCard(result: data.budgetExceededResult),
+          const SizedBox(height: 16),
+          _HeatmapCard(statuses: heatmapStatuses),
+          const SizedBox(height: 16),
+          if (data.topMarkets.isNotEmpty) ...[
+            _TopMarketsCard(markets: data.topMarkets),
+            const SizedBox(height: 16),
+          ],
+          if (data.mostBoughtProducts.isNotEmpty) ...[
+            _ProductListCard(
+              title: 'Produtos Mais Comprados',
+              icon: Icons.shopping_cart_outlined,
+              children: data.mostBoughtProducts
+                  .map(
+                    (p) => _ProductListTile(
                       name: p.productName,
                       type: p.productType,
-                      subtitle: '${p.count} ${p.count == 1 ? 'compra' : 'compras'}',
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 16),
-        ],
-        if (data.topSpendingProducts.isNotEmpty) ...[
-          _ProductListCard(
-            title: 'Maior Gasto por Produto',
-            icon: Icons.attach_money,
-            children: data.topSpendingProducts
-                .map((p) => _ProductListTile(
+                      subtitle:
+                          '${p.count} ${p.count == 1 ? 'compra' : 'compras'}',
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (data.topSpendingProducts.isNotEmpty) ...[
+            _ProductListCard(
+              title: 'Maior Gasto por Produto',
+              icon: Icons.attach_money,
+              children: data.topSpendingProducts
+                  .map(
+                    (p) => _ProductListTile(
                       name: p.productName,
                       type: p.productType,
                       subtitle: p.total.format(),
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 16),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
         ],
-      ],
       ),
     );
   }
@@ -202,11 +205,7 @@ class _EmptyState extends StatelessWidget {
             color: _kCanvas,
             borderRadius: BorderRadius.circular(40),
           ),
-          child: const Icon(
-            Icons.bar_chart_outlined,
-            size: 40,
-            color: _kMute,
-          ),
+          child: const Icon(Icons.bar_chart_outlined, size: 40, color: _kMute),
         ),
         const SizedBox(height: 16),
         const Text(
@@ -240,18 +239,12 @@ class _SpendingChartCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _CardHeader(
-            title: 'Gastos no Período',
-            icon: Icons.show_chart,
-          ),
+          const _CardHeader(title: 'Gastos no Período', icon: Icons.show_chart),
           const SizedBox(height: 16),
           if (points.isEmpty)
             const _NoDataLabel()
           else
-            SizedBox(
-              height: 180,
-              child: _SpendingLineChart(points: points),
-            ),
+            SizedBox(height: 180, child: _SpendingLineChart(points: points)),
         ],
       ),
     );
@@ -269,28 +262,33 @@ class _SpendingLineChart extends StatelessWidget {
       return FlSpot(e.key.toDouble(), e.value.total.reais);
     }).toList();
 
-    final maxY = points.map((p) => p.total.reais).fold(0.0, (a, b) => a > b ? a : b);
+    final maxY = points
+        .map((p) => p.total.reais)
+        .fold(0.0, (a, b) => a > b ? a : b);
 
     return LineChart(
       LineChartData(
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          getDrawingHorizontalLine: (_) => const FlLine(
-            color: _kCanvasSoft,
-            strokeWidth: 1,
-          ),
+          getDrawingHorizontalLine: (_) =>
+              const FlLine(color: _kCanvasSoft, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 24,
-              interval: (points.length / 4).ceilToDouble().clamp(1, double.infinity),
+              interval: (points.length / 4).ceilToDouble().clamp(
+                1,
+                double.infinity,
+              ),
               getTitlesWidget: (value, meta) {
                 final idx = value.toInt();
                 if (idx < 0 || idx >= points.length) return const SizedBox();
@@ -346,8 +344,9 @@ class _TopMarketsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxCents =
-        markets.map((m) => m.total.cents).fold(0, (a, b) => a > b ? a : b);
+    final maxCents = markets
+        .map((m) => m.total.cents)
+        .fold(0, (a, b) => a > b ? a : b);
 
     return _Card(
       child: Column(
@@ -373,11 +372,14 @@ class _TopMarketsCard extends StatelessWidget {
                 ),
                 titlesData: FlTitlesData(
                   rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -412,11 +414,17 @@ class _TopMarketsCard extends StatelessWidget {
                     barRods: [
                       BarChartRodData(
                         toY: e.value.total.reais,
-                        color: Color.lerp(
-                                _kPrimary, const Color(0xFF2a8c50), ratio) ??
+                        color:
+                            Color.lerp(
+                              _kPrimary,
+                              const Color(0xFF2a8c50),
+                              ratio,
+                            ) ??
                             _kPrimary,
                         width: 24,
-                        borderRadius: const BorderRadius.vertical(top: _kRadius),
+                        borderRadius: const BorderRadius.vertical(
+                          top: _kRadius,
+                        ),
                       ),
                     ],
                   );
@@ -452,7 +460,9 @@ class _BudgetIndicatorCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
             ),
             child: Icon(
-              exceeded > 0 ? Icons.warning_amber_rounded : Icons.check_circle_outline,
+              exceeded > 0
+                  ? Icons.warning_amber_rounded
+                  : Icons.check_circle_outline,
               color: color,
               size: 24,
             ),
@@ -540,7 +550,11 @@ class _ProductListTile extends StatelessWidget {
               color: _kCanvasSoft,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.inventory_2_outlined, size: 16, color: _kBody),
+            child: const Icon(
+              Icons.inventory_2_outlined,
+              size: 16,
+              color: _kBody,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -555,10 +569,7 @@ class _ProductListTile extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                Text(
-                  type,
-                  style: const TextStyle(color: _kMute, fontSize: 12),
-                ),
+                Text(type, style: const TextStyle(color: _kMute, fontSize: 12)),
               ],
             ),
           ),
@@ -662,7 +673,8 @@ class _HeatmapCard extends StatelessWidget {
   }
 
   static String _tooltipText(DayStatus s) {
-    final d = '${s.date.day.toString().padLeft(2, '0')}/${s.date.month.toString().padLeft(2, '0')}';
+    final d =
+        '${s.date.day.toString().padLeft(2, '0')}/${s.date.month.toString().padLeft(2, '0')}';
     final spent = s.totalSpent?.format() ?? '';
     if (s.budgetGoal == null) return '$d — Gasto: $spent';
     return '$d — Gasto: $spent de ${s.budgetGoal!.format()} (meta)';

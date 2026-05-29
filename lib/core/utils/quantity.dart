@@ -2,7 +2,6 @@ import 'package:meta/meta.dart';
 
 @immutable
 class Quantity {
-
   factory Quantity(final double value) {
     if (!value.isFinite || value <= 0) {
       throw ArgumentError('Quantity must be finite and > 0: $value');
@@ -31,7 +30,9 @@ class Quantity {
   Quantity operator *(final num factor) {
     final result = _value * factor;
     if (result <= 0) {
-      throw ArgumentError('Quantity multiplication result must be > 0: $result');
+      throw ArgumentError(
+        'Quantity multiplication result must be > 0: $result',
+      );
     }
     return Quantity(result);
   }

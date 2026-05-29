@@ -5,7 +5,6 @@ import '../../../../core/utils/quantity.dart';
 
 @immutable
 class ShoppingItem {
-
   factory ShoppingItem({
     required final String id,
     required final String productType,
@@ -155,7 +154,8 @@ class ShoppingItem {
   }
 
   @override
-  bool operator ==(final Object other) => other is ShoppingItem && other.id == id;
+  bool operator ==(final Object other) =>
+      other is ShoppingItem && other.id == id;
 
   @override
   int get hashCode => id.hashCode;

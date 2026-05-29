@@ -17,12 +17,12 @@ class GetSpendingByPeriod {
 
   (DateTime, DateTime) _dateRange(AnalyticsPeriod period, DateTime ref) {
     return switch (period) {
-      AnalyticsPeriod.weekly =>
-        (ref.subtract(const Duration(days: 6)), ref),
-      AnalyticsPeriod.monthly =>
-        (ref.subtract(const Duration(days: 29)), ref),
-      AnalyticsPeriod.yearly =>
-        (DateTime(ref.year - 1, ref.month, ref.day), ref),
+      AnalyticsPeriod.weekly => (ref.subtract(const Duration(days: 6)), ref),
+      AnalyticsPeriod.monthly => (ref.subtract(const Duration(days: 29)), ref),
+      AnalyticsPeriod.yearly => (
+        DateTime(ref.year - 1, ref.month, ref.day),
+        ref,
+      ),
     };
   }
 }

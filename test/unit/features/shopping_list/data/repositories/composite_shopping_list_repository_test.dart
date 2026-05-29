@@ -12,8 +12,12 @@ import 'package:listai/features/shopping_list/data/repositories/composite_shoppi
 import 'package:listai/core/network/sync_manager.dart';
 
 class MockLocalRepository extends Mock implements LocalShoppingListRepository {}
-class MockRemoteRepository extends Mock implements RemoteShoppingListRepository {}
+
+class MockRemoteRepository extends Mock
+    implements RemoteShoppingListRepository {}
+
 class MockSyncManager extends Mock implements SyncManager {}
+
 class FakeShoppingList extends Fake implements ShoppingList {}
 
 void main() {
@@ -54,7 +58,9 @@ void main() {
   group('CompositeShoppingListRepository - Reads', () {
     test('getCurrentList delegates to local repository', () async {
       final list = createTestList();
-      when(() => mockLocalRepository.getCurrentList()).thenAnswer((_) async => list);
+      when(
+        () => mockLocalRepository.getCurrentList(),
+      ).thenAnswer((_) async => list);
 
       final result = await compositeRepository.getCurrentList();
 
@@ -65,7 +71,9 @@ void main() {
 
     test('getSavedLists delegates to local repository', () async {
       final lists = [createTestList()];
-      when(() => mockLocalRepository.getSavedLists()).thenAnswer((_) async => lists);
+      when(
+        () => mockLocalRepository.getSavedLists(),
+      ).thenAnswer((_) async => lists);
 
       final result = await compositeRepository.getSavedLists();
 
@@ -75,7 +83,9 @@ void main() {
 
     test('watchCurrentList streams from local repository', () async {
       final list = createTestList();
-      when(() => mockLocalRepository.watchCurrentList()).thenAnswer((_) => Stream.value(list));
+      when(
+        () => mockLocalRepository.watchCurrentList(),
+      ).thenAnswer((_) => Stream.value(list));
 
       final stream = compositeRepository.watchCurrentList();
 
@@ -85,46 +95,68 @@ void main() {
   });
 
   group('CompositeShoppingListRepository - Writes', () {
-    test('saveCurrentList saves locally and triggers background sync when online', () async {
-      final list = createTestList();
-      when(() => mockLocalRepository.saveCurrentList(list)).thenAnswer((_) async {});
-      when(() => mockSyncManager.sync()).thenAnswer((_) async {});
+    test(
+      'saveCurrentList saves locally and triggers background sync when online',
+      () async {
+        final list = createTestList();
+        when(
+          () => mockLocalRepository.saveCurrentList(list),
+        ).thenAnswer((_) async {});
+        when(() => mockSyncManager.sync()).thenAnswer((_) async {});
 
-      await compositeRepository.saveCurrentList(list);
+        await compositeRepository.saveCurrentList(list);
 
-      verify(() => mockLocalRepository.saveCurrentList(list)).called(1);
-      verify(() => mockSyncManager.sync()).called(1);
-    });
+        verify(() => mockLocalRepository.saveCurrentList(list)).called(1);
+        verify(() => mockSyncManager.sync()).called(1);
+      },
+    );
 
-    test('saveCurrentList saves locally but does NOT trigger sync when offline', () async {
-      isOnlineMock = false;
-      final list = createTestList();
-      when(() => mockLocalRepository.saveCurrentList(list)).thenAnswer((_) async {});
+    test(
+      'saveCurrentList saves locally but does NOT trigger sync when offline',
+      () async {
+        isOnlineMock = false;
+        final list = createTestList();
+        when(
+          () => mockLocalRepository.saveCurrentList(list),
+        ).thenAnswer((_) async {});
 
-      await compositeRepository.saveCurrentList(list);
+        await compositeRepository.saveCurrentList(list);
 
-      verify(() => mockLocalRepository.saveCurrentList(list)).called(1);
-      verifyNever(() => mockSyncManager.sync());
-    });
+        verify(() => mockLocalRepository.saveCurrentList(list)).called(1);
+        verifyNever(() => mockSyncManager.sync());
+      },
+    );
 
-    test('deleteList deletes locally and deletes remotely when online', () async {
-      when(() => mockLocalRepository.deleteList('list-1')).thenAnswer((_) async {});
-      when(() => mockRemoteRepository.deleteList('list-1')).thenAnswer((_) async {});
+    test(
+      'deleteList deletes locally and deletes remotely when online',
+      () async {
+        when(
+          () => mockLocalRepository.deleteList('list-1'),
+        ).thenAnswer((_) async {});
+        when(
+          () => mockRemoteRepository.deleteList('list-1'),
+        ).thenAnswer((_) async {});
 
-      await compositeRepository.deleteList('list-1');
+        await compositeRepository.deleteList('list-1');
 
-      verify(() => mockLocalRepository.deleteList('list-1')).called(1);
-      verify(() => mockRemoteRepository.deleteList('list-1')).called(1);
-    });
+        verify(() => mockLocalRepository.deleteList('list-1')).called(1);
+        verify(() => mockRemoteRepository.deleteList('list-1')).called(1);
+      },
+    );
 
-    test('deleteList deletes locally and does NOT delete remotely when offline', () async {
-      isOnlineMock = false;
-      when(() => mockLocalRepository.deleteList('list-1')).thenAnswer((_) async {});
+    test(
+      'deleteList deletes locally and does NOT delete remotely when offline',
+      () async {
+        isOnlineMock = false;
+        when(
+          () => mockLocalRepository.deleteList('list-1'),
+        ).thenAnswer((_) async {});
 
-      await compositeRepository.deleteList('list-1');
+        await compositeRepository.deleteList('list-1');
 
-      verify(() => mockLocalRepository.deleteList('list-1')).called(1);
-      verifyNever(() => mockRemoteRepository.deleteList(any()));
-    });
+        verify(() => mockLocalRepository.deleteList('list-1')).called(1);
+        verifyNever(() => mockRemoteRepository.deleteList(any()));
+      },
+    );
   });
 }

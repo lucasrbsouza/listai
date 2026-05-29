@@ -16,8 +16,9 @@ abstract class ShoppingItemMapper {
       unitPrice: Money.fromCents(row.unitPriceCents),
       isWholesale: row.isWholesale,
       isWeightBased: row.isWeightBased,
-      pricePerKg:
-          row.pricePerKgCents != null ? Money.fromCents(row.pricePerKgCents!) : null,
+      pricePerKg: row.pricePerKgCents != null
+          ? Money.fromCents(row.pricePerKgCents!)
+          : null,
       weightKg: row.weightKg != null ? Quantity(row.weightKg!) : null,
       photoUrl: row.photoUrl,
       photoCapturedAt: row.photoCapturedAt,

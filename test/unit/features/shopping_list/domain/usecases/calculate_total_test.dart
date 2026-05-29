@@ -6,14 +6,14 @@ import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart
 import 'package:listai/features/shopping_list/domain/usecases/calculate_total.dart';
 
 ShoppingItem _item(String id, Money price, {int position = 0}) => ShoppingItem(
-      id: id,
-      productType: 'T',
-      productName: 'P',
-      quantity: Quantity.unit(),
-      unitPrice: price,
-      position: position,
-      createdAt: DateTime(2024),
-    );
+  id: id,
+  productType: 'T',
+  productName: 'P',
+  quantity: Quantity.unit(),
+  unitPrice: price,
+  position: position,
+  createdAt: DateTime(2024),
+);
 
 void main() {
   final useCase = CalculateTotal();

@@ -12,7 +12,10 @@ class RemoteShoppingListRepository implements ShoppingListRepository {
 
   final SupabaseClient _supabaseClient;
 
-  ShoppingList _mapList(final Map<String, dynamic> listMap, final List<Map<String, dynamic>> itemsMaps) {
+  ShoppingList _mapList(
+    final Map<String, dynamic> listMap,
+    final List<Map<String, dynamic>> itemsMaps,
+  ) {
     return ShoppingList(
       id: listMap['id'] as String,
       userId: listMap['user_id'] as String?,
@@ -73,7 +76,10 @@ class RemoteShoppingListRepository implements ShoppingListRepository {
     };
   }
 
-  Map<String, dynamic> _itemToJson(final ShoppingItem item, final String listId) {
+  Map<String, dynamic> _itemToJson(
+    final ShoppingItem item,
+    final String listId,
+  ) {
     return {
       'id': item.id,
       'list_id': listId,
@@ -133,7 +139,9 @@ class RemoteShoppingListRepository implements ShoppingListRepository {
           .eq('list_id', list.id);
 
       if (list.items.isNotEmpty) {
-        final itemsJson = list.items.map((i) => _itemToJson(i, list.id)).toList();
+        final itemsJson = list.items
+            .map((i) => _itemToJson(i, list.id))
+            .toList();
         await _supabaseClient.from('shopping_items').insert(itemsJson);
       }
     } on AuthException catch (e) {
@@ -239,13 +247,16 @@ class RemoteShoppingListRepository implements ShoppingListRepository {
   Stream<ShoppingList?> watchCurrentList() {
     final controller = StreamController<ShoppingList?>();
 
-    getCurrentList().then((list) {
-      if (!controller.isClosed) {
-        controller.add(list);
-      }
-    }).catchError((_) {});
+    getCurrentList()
+        .then((list) {
+          if (!controller.isClosed) {
+            controller.add(list);
+          }
+        })
+        .catchError((_) {});
 
-    final channel = _supabaseClient.channel('current_list_changes')
+    final channel = _supabaseClient
+        .channel('current_list_changes')
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',

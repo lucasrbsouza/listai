@@ -46,7 +46,11 @@ class SavedListsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTemplateList(BuildContext context, WidgetRef ref, List<ShoppingList> templates) {
+  Widget _buildTemplateList(
+    BuildContext context,
+    WidgetRef ref,
+    List<ShoppingList> templates,
+  ) {
     if (templates.isEmpty) {
       return const Center(child: Text('Nenhum template salvo ainda.'));
     }
@@ -64,12 +68,21 @@ class SavedListsScreen extends ConsumerWidget {
           );
 
           return Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
             margin: const EdgeInsets.only(bottom: 16.0),
             child: ListTile(
-              onTap: () => context.push('/saved/${template.id}', extra: template),
+              onTap: () =>
+                  context.push('/saved/${template.id}', extra: template),
               contentPadding: const EdgeInsets.all(16.0),
-              title: Text(template.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              title: Text(
+                template.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -78,7 +91,8 @@ class SavedListsScreen extends ConsumerWidget {
                   Text('Estimativa: ${totalEstimated.format()}'),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed: () => _confirmLoadTemplate(context, ref, template),
+                    onPressed: () =>
+                        _confirmLoadTemplate(context, ref, template),
                     icon: const Icon(Icons.file_upload),
                     label: const Text('Carregar como lista atual'),
                   ),
@@ -92,7 +106,10 @@ class SavedListsScreen extends ConsumerWidget {
   }
 
   Widget _buildHistoryList(
-      BuildContext context, WidgetRef ref, List<ShoppingList> history) {
+    BuildContext context,
+    WidgetRef ref,
+    List<ShoppingList> history,
+  ) {
     if (history.isEmpty) {
       return RefreshIndicator(
         onRefresh: () async => ref.refresh(savedListsProvider.future),
@@ -119,12 +136,17 @@ class SavedListsScreen extends ConsumerWidget {
           final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(list.createdAt);
 
           return Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
             margin: const EdgeInsets.only(bottom: 16.0),
             child: ListTile(
               onTap: () => context.push('/saved/${list.id}', extra: list),
               contentPadding: const EdgeInsets.all(16.0),
-              title: Text(list.name.isNotEmpty ? list.name : dateStr, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(
+                list.name.isNotEmpty ? list.name : dateStr,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -142,7 +164,11 @@ class SavedListsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmLoadTemplate(BuildContext context, WidgetRef ref, ShoppingList template) async {
+  Future<void> _confirmLoadTemplate(
+    BuildContext context,
+    WidgetRef ref,
+    ShoppingList template,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -150,7 +176,7 @@ class SavedListsScreen extends ConsumerWidget {
           title: const Text('Substituir lista atual?'),
           content: const Text(
             'Ao carregar este template, sua lista de compras atual será sobrescrita '
-            'e todos os itens não finalizados serão removidos. Deseja continuar?'
+            'e todos os itens não finalizados serão removidos. Deseja continuar?',
           ),
           actions: [
             TextButton(
@@ -173,16 +199,16 @@ class SavedListsScreen extends ConsumerWidget {
       // Since it's an interface, let me check if we can just cast or update via existing methods.
       // We can iterate over items, but `clearAll` followed by `addItem` for each is inefficient.
       // Let's assume we add `replaceWithTemplate` to `CurrentListNotifier` or just use the UI hack.
-      
+
       try {
         final notifier = ref.read(currentListProvider.notifier);
-        
+
         // As a workaround since replaceWithTemplate is not in interface, we will try to cast it
         // Or if it's the real implementation, we should add it.
         // Actually, the test uses `FakeCurrentListNotifier.replaceWithTemplate`.
         // If it throws here, we need to add the method to the provider.
         (notifier as dynamic).replaceWithTemplate(template);
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Template carregado com sucesso!')),

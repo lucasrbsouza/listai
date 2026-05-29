@@ -9,42 +9,43 @@ import 'package:listai/features/analytics/presentation/providers/analytics_provi
 import 'package:listai/features/analytics/presentation/screens/analytics_screen.dart';
 
 AnalyticsData _emptyData() => const AnalyticsData(
-      spendingPoints: [],
-      topMarkets: [],
-      mostBoughtProducts: [],
-      topSpendingProducts: [],
-      budgetExceededResult: BudgetExceededResult(
-        exceededCount: 0,
-        totalPurchases: 0,
-      ),
-    );
+  spendingPoints: [],
+  topMarkets: [],
+  mostBoughtProducts: [],
+  topSpendingProducts: [],
+  budgetExceededResult: BudgetExceededResult(
+    exceededCount: 0,
+    totalPurchases: 0,
+  ),
+);
 
 AnalyticsData _dataWithContent() => AnalyticsData(
-      spendingPoints: [
-        SpendingPoint(
-            date: DateTime(2024, 6, 14), total: Money.fromReais(100)),
-        SpendingPoint(
-            date: DateTime(2024, 6, 15), total: Money.fromReais(200)),
-      ],
-      topMarkets: [
-        MarketSpending(
-            marketName: 'Mercado A', total: Money.fromReais(300)),
-      ],
-      mostBoughtProducts: const [
-        ProductPurchaseCount(
-            productName: 'Arroz', productType: 'Mercearia', count: 5),
-      ],
-      topSpendingProducts: [
-        ProductSpendingTotal(
-            productName: 'Carne',
-            productType: 'Carnes',
-            total: Money.fromReais(200)),
-      ],
-      budgetExceededResult: const BudgetExceededResult(
-        exceededCount: 2,
-        totalPurchases: 5,
-      ),
-    );
+  spendingPoints: [
+    SpendingPoint(date: DateTime(2024, 6, 14), total: Money.fromReais(100)),
+    SpendingPoint(date: DateTime(2024, 6, 15), total: Money.fromReais(200)),
+  ],
+  topMarkets: [
+    MarketSpending(marketName: 'Mercado A', total: Money.fromReais(300)),
+  ],
+  mostBoughtProducts: const [
+    ProductPurchaseCount(
+      productName: 'Arroz',
+      productType: 'Mercearia',
+      count: 5,
+    ),
+  ],
+  topSpendingProducts: [
+    ProductSpendingTotal(
+      productName: 'Carne',
+      productType: 'Carnes',
+      total: Money.fromReais(200),
+    ),
+  ],
+  budgetExceededResult: const BudgetExceededResult(
+    exceededCount: 2,
+    totalPurchases: 5,
+  ),
+);
 
 Widget _wrap(Widget child, {List<Override> overrides = const []}) {
   return ProviderScope(
@@ -56,8 +57,7 @@ Widget _wrap(Widget child, {List<Override> overrides = const []}) {
   );
 }
 
-Finder _textOffstage(String text) =>
-    find.text(text, skipOffstage: false);
+Finder _textOffstage(String text) => find.text(text, skipOffstage: false);
 
 void main() {
   testWidgets('shows loading indicator while fetching', (tester) async {
@@ -183,8 +183,7 @@ void main() {
           analyticsDataProvider.overrideWith((ref, period) async {
             return AnalyticsData(
               spendingPoints: [
-                SpendingPoint(
-                    date: DateTime(2024), total: Money.fromReais(10)),
+                SpendingPoint(date: DateTime(2024), total: Money.fromReais(10)),
               ],
               topMarkets: [],
               mostBoughtProducts: [],
@@ -201,8 +200,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-        find.text('Nenhuma compra no período', skipOffstage: false),
-        findsOneWidget);
+      find.text('Nenhuma compra no período', skipOffstage: false),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows error state on failure', (tester) async {

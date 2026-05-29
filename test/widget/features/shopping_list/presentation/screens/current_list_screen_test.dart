@@ -453,9 +453,20 @@ void main() {
     expect(find.byTooltip('Adicionar item'), findsOneWidget);
   });
 
-  testWidgets('tap Limpar tudo shows dialog, Cancel does not clear list', (WidgetTester tester) async {
-    final item = createItem(id: '1', name: 'Arroz', unitPrice: Money.fromReais(5.0), quantity: Quantity(1.0));
-    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
+  testWidgets('tap Limpar tudo shows dialog, Cancel does not clear list', (
+    WidgetTester tester,
+  ) async {
+    final item = createItem(
+      id: '1',
+      name: 'Arroz',
+      unitPrice: Money.fromReais(5.0),
+      quantity: Quantity(1.0),
+    );
+    final list = createList(
+      name: 'Lista',
+      marketName: 'Mercado',
+      items: [item],
+    );
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));
@@ -481,58 +492,82 @@ void main() {
     expect(find.text('Limpar lista atual?'), findsNothing);
   });
 
-  testWidgets('tap Limpar tudo in dialog clears list and shows SnackBar with Desfazer which calls undo', (WidgetTester tester) async {
-    final item = createItem(id: '1', name: 'Arroz', unitPrice: Money.fromReais(5.0), quantity: Quantity(1.0));
-    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
-    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+  testWidgets(
+    'tap Limpar tudo in dialog clears list and shows SnackBar with Desfazer which calls undo',
+    (WidgetTester tester) async {
+      final item = createItem(
+        id: '1',
+        name: 'Arroz',
+        unitPrice: Money.fromReais(5.0),
+        quantity: Quantity(1.0),
+      );
+      final list = createList(
+        name: 'Lista',
+        marketName: 'Mercado',
+        items: [item],
+      );
+      final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createWidgetUnderTest(notifier));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Limpar tudo'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Limpar tudo'));
+      await tester.pumpAndSettle();
 
-    // Tap "Limpar tudo" in the dialog
-    await tester.tap(find.widgetWithText(FilledButton, 'Limpar tudo'));
-    await tester.pumpAndSettle();
+      // Tap "Limpar tudo" in the dialog
+      await tester.tap(find.widgetWithText(FilledButton, 'Limpar tudo'));
+      await tester.pumpAndSettle();
 
-    // Verify notifier.clearAll was called
-    expect(notifier.clearAllCalled, isTrue);
+      // Verify notifier.clearAll was called
+      expect(notifier.clearAllCalled, isTrue);
 
-    // SnackBar appears
-    expect(find.byType(SnackBar), findsOneWidget);
-    expect(find.text('Lista limpa.'), findsOneWidget);
+      // SnackBar appears
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Lista limpa.'), findsOneWidget);
 
-    // Tap "Desfazer" in SnackBar
-    await tester.tap(find.text('Desfazer'));
-    await tester.pump();
+      // Tap "Desfazer" in SnackBar
+      await tester.tap(find.text('Desfazer'));
+      await tester.pump();
 
-    expect(notifier.undoCalled, isTrue);
-  });
+      expect(notifier.undoCalled, isTrue);
+    },
+  );
 
-  testWidgets('tap Salvar como template antes de limpar calls saveAsTemplate and clears list', (WidgetTester tester) async {
-    final item = createItem(id: '1', name: 'Arroz', unitPrice: Money.fromReais(5.0), quantity: Quantity(1.0));
-    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
-    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+  testWidgets(
+    'tap Salvar como template antes de limpar calls saveAsTemplate and clears list',
+    (WidgetTester tester) async {
+      final item = createItem(
+        id: '1',
+        name: 'Arroz',
+        unitPrice: Money.fromReais(5.0),
+        quantity: Quantity(1.0),
+      );
+      final list = createList(
+        name: 'Lista',
+        marketName: 'Mercado',
+        items: [item],
+      );
+      final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
-    await tester.pumpWidget(createWidgetUnderTest(notifier));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createWidgetUnderTest(notifier));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Limpar tudo'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Limpar tudo'));
+      await tester.pumpAndSettle();
 
-    // Tap "Salvar como template antes de limpar"
-    await tester.tap(find.text('Salvar como template antes de limpar'));
-    await tester.pumpAndSettle();
+      // Tap "Salvar como template antes de limpar"
+      await tester.tap(find.text('Salvar como template antes de limpar'));
+      await tester.pumpAndSettle();
 
-    // Verify saveAsTemplate and clearAll were called
-    expect(notifier.saveAsTemplateCalled, isTrue);
-    expect(notifier.clearAllCalled, isTrue);
-  });
+      // Verify saveAsTemplate and clearAll were called
+      expect(notifier.saveAsTemplateCalled, isTrue);
+      expect(notifier.clearAllCalled, isTrue);
+    },
+  );
 
   testWidgets('Finalizar Compra button confirms then calls finalizePurchase', (
     WidgetTester tester,
@@ -543,7 +578,11 @@ void main() {
       unitPrice: Money.fromReais(5.0),
       quantity: Quantity(1.0),
     );
-    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
+    final list = createList(
+      name: 'Lista',
+      marketName: 'Mercado',
+      items: [item],
+    );
     final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
 
     await tester.pumpWidget(createWidgetUnderTest(notifier));

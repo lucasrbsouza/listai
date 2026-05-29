@@ -18,11 +18,11 @@ ShoppingItem _item(String id, {int position = 0}) {
 }
 
 ShoppingList _emptyList() => ShoppingList(
-      id: 'list-1',
-      name: 'Test',
-      createdAt: DateTime(2024),
-      updatedAt: DateTime(2024),
-    );
+  id: 'list-1',
+  name: 'Test',
+  createdAt: DateTime(2024),
+  updatedAt: DateTime(2024),
+);
 
 void main() {
   final useCase = AddItemToList();

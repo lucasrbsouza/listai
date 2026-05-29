@@ -21,10 +21,7 @@ ShoppingItem _item({
   );
 }
 
-ShoppingList _list({
-  List<ShoppingItem> items = const [],
-  Money? budgetGoal,
-}) {
+ShoppingList _list({List<ShoppingItem> items = const [], Money? budgetGoal}) {
   return ShoppingList(
     id: 'list-1',
     name: 'Compra do mês',
@@ -43,8 +40,18 @@ void main() {
 
     test('sums totalPrice of all items', () {
       final items = [
-        _item(id: 'a', unitPrice: Money.fromReais(10), quantity: Quantity(2), position: 0),
-        _item(id: 'b', unitPrice: Money.fromReais(5), quantity: Quantity(1), position: 1),
+        _item(
+          id: 'a',
+          unitPrice: Money.fromReais(10),
+          quantity: Quantity(2),
+          position: 0,
+        ),
+        _item(
+          id: 'b',
+          unitPrice: Money.fromReais(5),
+          quantity: Quantity(1),
+          position: 1,
+        ),
       ];
       expect(_list(items: items).totalPrice.cents, 2500);
     });
@@ -93,7 +100,10 @@ void main() {
     });
 
     test('amountOverBudget is zero when within budget', () {
-      expect(_list(budgetGoal: Money.fromReais(100)).amountOverBudget, equals(const Money.zero()));
+      expect(
+        _list(budgetGoal: Money.fromReais(100)).amountOverBudget,
+        equals(const Money.zero()),
+      );
     });
 
     test('amountOverBudget correct when exceeded', () {
@@ -181,12 +191,20 @@ void main() {
     });
 
     test('duplicate item IDs throw', () {
-      final dup = [_item(id: 'same', position: 0), _item(id: 'same', position: 1)];
+      final dup = [
+        _item(id: 'same', position: 0),
+        _item(id: 'same', position: 1),
+      ];
       expect(() => _list(items: dup), throwsArgumentError);
     });
 
     test('itemCount reflects items length', () {
-      final list = _list(items: [_item(id: 'a'), _item(id: 'b', position: 1)]);
+      final list = _list(
+        items: [
+          _item(id: 'a'),
+          _item(id: 'b', position: 1),
+        ],
+      );
       expect(list.itemCount, 2);
     });
   });

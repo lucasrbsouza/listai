@@ -19,45 +19,43 @@ void main() {
     bool isCompleted = false,
     bool isTemplate = false,
     DateTime? completedAt,
-  }) =>
-      ShoppingListsTableData(
-        id: id,
-        userId: userId,
-        name: name,
-        marketName: marketName,
-        budgetGoalCents: budgetGoalCents,
-        isCompleted: isCompleted,
-        isTemplate: isTemplate,
-        completedAt: completedAt,
-        createdAt: baseDate,
-        updatedAt: baseDate,
-        syncStatus: 'synced',
-      );
+  }) => ShoppingListsTableData(
+    id: id,
+    userId: userId,
+    name: name,
+    marketName: marketName,
+    budgetGoalCents: budgetGoalCents,
+    isCompleted: isCompleted,
+    isTemplate: isTemplate,
+    completedAt: completedAt,
+    createdAt: baseDate,
+    updatedAt: baseDate,
+    syncStatus: 'synced',
+  );
 
   ShoppingItemsTableData makeItemRow({
     String id = 'item-1',
     String listId = 'list-1',
     int position = 0,
-  }) =>
-      ShoppingItemsTableData(
-        id: id,
-        listId: listId,
-        productType: 'Padaria',
-        productName: 'Pão',
-        brand: null,
-        quantityValue: 1.0,
-        unitPriceCents: 500,
-        isWholesale: false,
-        isWeightBased: false,
-        pricePerKgCents: null,
-        weightKg: null,
-        photoUrl: null,
-        photoCapturedAt: null,
-        substituteItemId: null,
-        position: position,
-        createdAt: baseDate,
-        syncStatus: 'synced',
-      );
+  }) => ShoppingItemsTableData(
+    id: id,
+    listId: listId,
+    productType: 'Padaria',
+    productName: 'Pão',
+    brand: null,
+    quantityValue: 1.0,
+    unitPriceCents: 500,
+    isWholesale: false,
+    isWeightBased: false,
+    pricePerKgCents: null,
+    weightKg: null,
+    photoUrl: null,
+    photoCapturedAt: null,
+    substituteItemId: null,
+    position: position,
+    createdAt: baseDate,
+    syncStatus: 'synced',
+  );
 
   group('ShoppingListMapper.toEntity', () {
     test('converts row to entity with no items', () {
@@ -220,8 +218,10 @@ void main() {
         updatedAt: baseDate,
       );
 
-      final itemCompanion =
-          ShoppingItemMapper.toCompanion(item, listId: 'list-rt-2');
+      final itemCompanion = ShoppingItemMapper.toCompanion(
+        item,
+        listId: 'list-rt-2',
+      );
       final itemRow = ShoppingItemsTableData(
         id: itemCompanion.id.value,
         listId: itemCompanion.listId.value,

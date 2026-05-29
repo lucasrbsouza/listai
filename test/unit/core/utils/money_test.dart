@@ -38,7 +38,10 @@ void main() {
     });
 
     test('subtraction resulting in negative throws', () {
-      expect(() => Money.fromCents(50) - Money.fromCents(100), throwsArgumentError);
+      expect(
+        () => Money.fromCents(50) - Money.fromCents(100),
+        throwsArgumentError,
+      );
     });
 
     test('multiply by int', () {
@@ -54,7 +57,8 @@ void main() {
     });
 
     test('no precision loss in sum of cents', () {
-      final total = Money.fromCents(1) + Money.fromCents(1) + Money.fromCents(1);
+      final total =
+          Money.fromCents(1) + Money.fromCents(1) + Money.fromCents(1);
       expect(total.cents, 3);
     });
   });
@@ -99,7 +103,9 @@ void main() {
     });
 
     test('format en-US uses dot as decimal separator', () {
-      final formatted = Money.fromCents(1234).format(locale: 'en-US', symbol: r'$');
+      final formatted = Money.fromCents(
+        1234,
+      ).format(locale: 'en-US', symbol: r'$');
       expect(formatted, contains('.'));
     });
 

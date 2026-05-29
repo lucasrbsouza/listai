@@ -25,32 +25,30 @@ void main() {
     bool isCompleted = false,
     bool isTemplate = false,
     Money? budgetGoal,
-  }) =>
-      ShoppingList(
-        id: id,
-        name: name,
-        items: items,
-        isCompleted: isCompleted,
-        isTemplate: isTemplate,
-        budgetGoal: budgetGoal,
-        createdAt: baseDate,
-        updatedAt: baseDate,
-      );
+  }) => ShoppingList(
+    id: id,
+    name: name,
+    items: items,
+    isCompleted: isCompleted,
+    isTemplate: isTemplate,
+    budgetGoal: budgetGoal,
+    createdAt: baseDate,
+    updatedAt: baseDate,
+  );
 
   ShoppingItem makeItem({
     String id = 'item-1',
     String name = 'Pão',
     int position = 0,
-  }) =>
-      ShoppingItem(
-        id: id,
-        productType: 'Padaria',
-        productName: name,
-        quantity: Quantity(2),
-        unitPrice: Money.fromCents(500),
-        position: position,
-        createdAt: baseDate,
-      );
+  }) => ShoppingItem(
+    id: id,
+    productType: 'Padaria',
+    productName: name,
+    quantity: Quantity(2),
+    unitPrice: Money.fromCents(500),
+    position: position,
+    createdAt: baseDate,
+  );
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -228,18 +226,18 @@ void main() {
       expect(purchaseItems.first.unitPriceCents, 500);
     });
 
-    test('finalizePurchase with budgetGoal records exceededBudget flag', () async {
-      final item = makeItem();
-      final list = makeList(
-        items: [item],
-        budgetGoal: Money.fromCents(100),
-      );
-      await repo.saveCurrentList(list);
-      await repo.finalizePurchase(list);
+    test(
+      'finalizePurchase with budgetGoal records exceededBudget flag',
+      () async {
+        final item = makeItem();
+        final list = makeList(items: [item], budgetGoal: Money.fromCents(100));
+        await repo.saveCurrentList(list);
+        await repo.finalizePurchase(list);
 
-      final purchases = await db.select(db.purchasesTable).get();
-      expect(purchases.first.exceededBudget, true);
-    });
+        final purchases = await db.select(db.purchasesTable).get();
+        expect(purchases.first.exceededBudget, true);
+      },
+    );
   });
 
   group('watchCurrentList', () {
@@ -269,9 +267,7 @@ void main() {
 
       // After save, current list exists; next emission updates the name
       final emitted = <String?>[];
-      final sub = repo.watchCurrentList().listen(
-        (l) => emitted.add(l?.name),
-      );
+      final sub = repo.watchCurrentList().listen((l) => emitted.add(l?.name));
 
       await Future<void>.delayed(Duration.zero);
       await repo.saveCurrentList(list.copyWith(name: 'Nome novo'));

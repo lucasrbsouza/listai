@@ -57,3 +57,9 @@ google-services.json
 .fvm/
 # Distributed build artifacts
 *.apk
+
+# Signing — NEVER commit
+*.keystore
+*.jks
+key.properties
+release.keystore.base64

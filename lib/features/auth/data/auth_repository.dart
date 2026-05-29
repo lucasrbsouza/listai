@@ -19,11 +19,16 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Stream<User?> authStateChanges() {
-    return _supabaseClient.auth.onAuthStateChange.map((state) => state.session?.user);
+    return _supabaseClient.auth.onAuthStateChange.map(
+      (state) => state.session?.user,
+    );
   }
 
   @override
-  Future<User?> signInWithEmail(final String email, final String password) async {
+  Future<User?> signInWithEmail(
+    final String email,
+    final String password,
+  ) async {
     try {
       final response = await _supabaseClient.auth.signInWithPassword(
         email: email,
@@ -47,7 +52,10 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<User?> signUpWithEmail(final String email, final String password) async {
+  Future<User?> signUpWithEmail(
+    final String email,
+    final String password,
+  ) async {
     try {
       final response = await _supabaseClient.auth.signUp(
         email: email,

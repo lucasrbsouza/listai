@@ -24,7 +24,9 @@ class SyncManager {
 
   void startListening() {
     _connectivitySubscription?.cancel();
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((results) async {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      results,
+    ) async {
       final hasConnection = results.any((r) => r != ConnectivityResult.none);
       if (hasConnection && await isOnline()) {
         await sync();
@@ -37,7 +39,9 @@ class SyncManager {
     _connectivitySubscription = null;
   }
 
-  void startPeriodicSync({final Duration interval = const Duration(minutes: 15)}) {
+  void startPeriodicSync({
+    final Duration interval = const Duration(minutes: 15),
+  }) {
     _periodicTimer?.cancel();
     _periodicTimer = Timer.periodic(interval, (_) async {
       if (await isOnline()) {
@@ -53,7 +57,9 @@ class SyncManager {
 
   bool _canUpload() {
     final now = DateTime.now();
-    _uploadTimestamps.removeWhere((t) => now.difference(t) > const Duration(minutes: 1));
+    _uploadTimestamps.removeWhere(
+      (t) => now.difference(t) > const Duration(minutes: 1),
+    );
     return _uploadTimestamps.length < 100;
   }
 
@@ -93,8 +99,9 @@ class SyncManager {
             await localRepository.updateSyncStatus(localList.id, 'synced');
           } else {
             // Conflict exists: resolve using Last-Write-Wins (LWW)
-            if (localList.updatedAt.isAtSameMomentAs(remoteList.updatedAt) && 
-                (localList.name != remoteList.name || localList.marketName != remoteList.marketName)) {
+            if (localList.updatedAt.isAtSameMomentAs(remoteList.updatedAt) &&
+                (localList.name != remoteList.name ||
+                    localList.marketName != remoteList.marketName)) {
               // Critical conflict: identical updatedAt but different details
               await localRepository.updateSyncStatus(localList.id, 'conflict');
             } else if (localList.updatedAt.isAfter(remoteList.updatedAt)) {

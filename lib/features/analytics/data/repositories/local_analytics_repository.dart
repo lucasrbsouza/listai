@@ -15,8 +15,9 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final rows = await _db.customSelect(
-      '''
+    final rows = await _db
+        .customSelect(
+          '''
       SELECT date(completed_at, 'unixepoch') AS day,
              SUM(total_amount_cents) AS total
       FROM purchases_table
@@ -24,12 +25,13 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
       GROUP BY day
       ORDER BY day ASC
       ''',
-      variables: [
-        Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
-      ],
-      readsFrom: {_db.purchasesTable},
-    ).get();
+          variables: [
+            Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
+          ],
+          readsFrom: {_db.purchasesTable},
+        )
+        .get();
 
     return rows.map((row) {
       final dayStr = row.read<String>('day');
@@ -50,8 +52,9 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
     required DateTime endDate,
     int limit = 5,
   }) async {
-    final rows = await _db.customSelect(
-      '''
+    final rows = await _db
+        .customSelect(
+          '''
       SELECT market_name, SUM(total_amount_cents) AS total
       FROM purchases_table
       WHERE completed_at >= ? AND completed_at <= ?
@@ -60,19 +63,22 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
       ORDER BY total DESC
       LIMIT ?
       ''',
-      variables: [
-        Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(limit),
-      ],
-      readsFrom: {_db.purchasesTable},
-    ).get();
+          variables: [
+            Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(limit),
+          ],
+          readsFrom: {_db.purchasesTable},
+        )
+        .get();
 
     return rows
-        .map((row) => MarketSpending(
-              marketName: row.read<String>('market_name'),
-              total: Money.fromCents(row.read<int>('total')),
-            ))
+        .map(
+          (row) => MarketSpending(
+            marketName: row.read<String>('market_name'),
+            total: Money.fromCents(row.read<int>('total')),
+          ),
+        )
         .toList();
   }
 
@@ -82,8 +88,9 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
     required DateTime endDate,
     int limit = 5,
   }) async {
-    final rows = await _db.customSelect(
-      '''
+    final rows = await _db
+        .customSelect(
+          '''
       SELECT pi.product_name, pi.product_type, COUNT(*) AS cnt
       FROM purchase_items_table pi
       JOIN purchases_table p ON pi.purchase_id = p.id
@@ -92,20 +99,23 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
       ORDER BY cnt DESC
       LIMIT ?
       ''',
-      variables: [
-        Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(limit),
-      ],
-      readsFrom: {_db.purchaseItemsTable, _db.purchasesTable},
-    ).get();
+          variables: [
+            Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(limit),
+          ],
+          readsFrom: {_db.purchaseItemsTable, _db.purchasesTable},
+        )
+        .get();
 
     return rows
-        .map((row) => ProductPurchaseCount(
-              productName: row.read<String>('product_name'),
-              productType: row.read<String>('product_type'),
-              count: row.read<int>('cnt'),
-            ))
+        .map(
+          (row) => ProductPurchaseCount(
+            productName: row.read<String>('product_name'),
+            productType: row.read<String>('product_type'),
+            count: row.read<int>('cnt'),
+          ),
+        )
         .toList();
   }
 
@@ -115,8 +125,9 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
     required DateTime endDate,
     int limit = 5,
   }) async {
-    final rows = await _db.customSelect(
-      '''
+    final rows = await _db
+        .customSelect(
+          '''
       SELECT pi.product_name, pi.product_type,
              SUM(pi.total_price_cents) AS total
       FROM purchase_items_table pi
@@ -126,20 +137,23 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
       ORDER BY total DESC
       LIMIT ?
       ''',
-      variables: [
-        Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(limit),
-      ],
-      readsFrom: {_db.purchaseItemsTable, _db.purchasesTable},
-    ).get();
+          variables: [
+            Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(limit),
+          ],
+          readsFrom: {_db.purchaseItemsTable, _db.purchasesTable},
+        )
+        .get();
 
     return rows
-        .map((row) => ProductSpendingTotal(
-              productName: row.read<String>('product_name'),
-              productType: row.read<String>('product_type'),
-              total: Money.fromCents(row.read<int>('total')),
-            ))
+        .map(
+          (row) => ProductSpendingTotal(
+            productName: row.read<String>('product_name'),
+            productType: row.read<String>('product_type'),
+            total: Money.fromCents(row.read<int>('total')),
+          ),
+        )
         .toList();
   }
 
@@ -148,8 +162,9 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final rows = await _db.customSelect(
-      '''
+    final rows = await _db
+        .customSelect(
+          '''
       SELECT
         date(completed_at, 'unixepoch') AS day,
         SUM(total_amount_cents) AS total_spent,
@@ -160,20 +175,22 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
       GROUP BY day
       ORDER BY day ASC
       ''',
-      variables: [
-        Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
-      ],
-      readsFrom: {_db.purchasesTable},
-    ).get();
+          variables: [
+            Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
+          ],
+          readsFrom: {_db.purchasesTable},
+        )
+        .get();
 
     final purchaseByDay = <String, ({Money totalSpent, Money? budgetGoal})>{};
     for (final row in rows) {
       final day = row.read<String>('day');
       final totalSpent = Money.fromCents(row.read<int>('total_spent'));
       final hasBudget = row.read<int>('has_budget') == 1;
-      final budgetGoal =
-          hasBudget ? Money.fromCents(row.read<int>('total_budget')) : null;
+      final budgetGoal = hasBudget
+          ? Money.fromCents(row.read<int>('total_budget'))
+          : null;
       purchaseByDay[day] = (totalSpent: totalSpent, budgetGoal: budgetGoal);
     }
 
@@ -196,20 +213,22 @@ class LocalAnalyticsRepository implements AnalyticsRepository {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final rows = await _db.customSelect(
-      '''
+    final rows = await _db
+        .customSelect(
+          '''
       SELECT
         COUNT(*) AS total_purchases,
         COALESCE(SUM(CASE WHEN exceeded_budget = 1 AND budget_goal_cents IS NOT NULL THEN 1 ELSE 0 END), 0) AS exceeded_count
       FROM purchases_table
       WHERE completed_at >= ? AND completed_at <= ?
       ''',
-      variables: [
-        Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
-      ],
-      readsFrom: {_db.purchasesTable},
-    ).get();
+          variables: [
+            Variable.withInt(startDate.millisecondsSinceEpoch ~/ 1000),
+            Variable.withInt(endDate.millisecondsSinceEpoch ~/ 1000),
+          ],
+          readsFrom: {_db.purchasesTable},
+        )
+        .get();
 
     if (rows.isEmpty) {
       return const BudgetExceededResult(exceededCount: 0, totalPurchases: 0);

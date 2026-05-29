@@ -30,7 +30,9 @@ void main() {
     int? budgetGoalCents,
     bool exceededBudget = false,
   }) async {
-    await db.into(db.purchasesTable).insert(
+    await db
+        .into(db.purchasesTable)
+        .insert(
           PurchasesTableCompanion.insert(
             id: id,
             userId: 'user-1',
@@ -53,7 +55,9 @@ void main() {
     double quantityValue = 1,
     int unitPriceCents = 0,
   }) async {
-    await db.into(db.purchaseItemsTable).insert(
+    await db
+        .into(db.purchaseItemsTable)
+        .insert(
           PurchaseItemsTableCompanion.insert(
             id: id,
             purchaseId: purchaseId,
@@ -71,8 +75,10 @@ void main() {
 
   group('getSpendingPoints', () {
     test('returns empty when no purchases', () async {
-      final result =
-          await repo.getSpendingPoints(startDate: start, endDate: end);
+      final result = await repo.getSpendingPoints(
+        startDate: start,
+        endDate: end,
+      );
       expect(result, isEmpty);
     });
 
@@ -93,8 +99,10 @@ void main() {
         totalAmountCents: 2000,
       );
 
-      final result =
-          await repo.getSpendingPoints(startDate: start, endDate: end);
+      final result = await repo.getSpendingPoints(
+        startDate: start,
+        endDate: end,
+      );
 
       expect(result, hasLength(2));
       expect(result.first.total.cents, 8000);
@@ -178,8 +186,10 @@ void main() {
         totalPriceCents: 500,
       );
 
-      final result =
-          await repo.getMostBoughtProducts(startDate: start, endDate: end);
+      final result = await repo.getMostBoughtProducts(
+        startDate: start,
+        endDate: end,
+      );
 
       expect(result, hasLength(2));
       expect(result.first.productName, 'Arroz');
@@ -209,8 +219,10 @@ void main() {
         totalPriceCents: 500,
       );
 
-      final result =
-          await repo.getTopSpendingProducts(startDate: start, endDate: end);
+      final result = await repo.getTopSpendingProducts(
+        startDate: start,
+        endDate: end,
+      );
 
       expect(result, hasLength(2));
       expect(result.first.productName, 'Carne');
@@ -240,16 +252,20 @@ void main() {
         totalAmountCents: 5000,
       );
 
-      final result =
-          await repo.getBudgetExceededCount(startDate: start, endDate: end);
+      final result = await repo.getBudgetExceededCount(
+        startDate: start,
+        endDate: end,
+      );
 
       expect(result.totalPurchases, 3);
       expect(result.exceededCount, 1);
     });
 
     test('zero when no purchases', () async {
-      final result =
-          await repo.getBudgetExceededCount(startDate: start, endDate: end);
+      final result = await repo.getBudgetExceededCount(
+        startDate: start,
+        endDate: end,
+      );
       expect(result.totalPurchases, 0);
       expect(result.exceededCount, 0);
     });
@@ -274,8 +290,7 @@ void main() {
 
       expect(result, hasLength(7));
 
-      final dayWithPurchase =
-          result.firstWhere((d) => d.date.day == 3);
+      final dayWithPurchase = result.firstWhere((d) => d.date.day == 3);
       expect(dayWithPurchase.hasPurchase, isTrue);
       expect(dayWithPurchase.totalSpent!.cents, 5000);
       expect(dayWithPurchase.budgetGoal!.cents, 10000);

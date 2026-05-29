@@ -69,7 +69,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         context.go('/');
       }
     } catch (e) {
-      final message = e is Failure ? e.message : e.toString().replaceAll('Exception: ', '');
+      final message = e is Failure
+          ? e.message
+          : e.toString().replaceAll('Exception: ', '');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -166,7 +168,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     ),
                     child: const Text(
                       'Criar Conta',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
               ],

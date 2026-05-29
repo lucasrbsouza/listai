@@ -16,8 +16,9 @@ final analyticsRepositoryProvider = Provider<AnalyticsRepository>((ref) {
   return LocalAnalyticsRepository(db);
 });
 
-final selectedPeriodProvider =
-    StateProvider<AnalyticsPeriod>((ref) => AnalyticsPeriod.monthly);
+final selectedPeriodProvider = StateProvider<AnalyticsPeriod>(
+  (ref) => AnalyticsPeriod.monthly,
+);
 
 class AnalyticsData {
   const AnalyticsData({
@@ -43,27 +44,27 @@ final heatmapDataProvider = FutureProvider<List<DayStatus>>((ref) async {
 
 final analyticsDataProvider =
     FutureProvider.family<AnalyticsData, AnalyticsPeriod>((ref, period) async {
-  final repo = ref.watch(analyticsRepositoryProvider);
+      final repo = ref.watch(analyticsRepositoryProvider);
 
-  final getSpending = GetSpendingByPeriod(repo);
-  final getMarkets = GetTopMarkets(repo);
-  final getMostBought = GetMostBoughtProducts(repo);
-  final getTopSpending = GetTopSpendingProducts(repo);
-  final getBudgetExceeded = GetBudgetExceededCount(repo);
+      final getSpending = GetSpendingByPeriod(repo);
+      final getMarkets = GetTopMarkets(repo);
+      final getMostBought = GetMostBoughtProducts(repo);
+      final getTopSpending = GetTopSpendingProducts(repo);
+      final getBudgetExceeded = GetBudgetExceededCount(repo);
 
-  final results = await Future.wait([
-    getSpending(period),
-    getMarkets(period),
-    getMostBought(period),
-    getTopSpending(period),
-    getBudgetExceeded(period),
-  ]);
+      final results = await Future.wait([
+        getSpending(period),
+        getMarkets(period),
+        getMostBought(period),
+        getTopSpending(period),
+        getBudgetExceeded(period),
+      ]);
 
-  return AnalyticsData(
-    spendingPoints: results[0] as List<SpendingPoint>,
-    topMarkets: results[1] as List<MarketSpending>,
-    mostBoughtProducts: results[2] as List<ProductPurchaseCount>,
-    topSpendingProducts: results[3] as List<ProductSpendingTotal>,
-    budgetExceededResult: results[4] as BudgetExceededResult,
-  );
-});
+      return AnalyticsData(
+        spendingPoints: results[0] as List<SpendingPoint>,
+        topMarkets: results[1] as List<MarketSpending>,
+        mostBoughtProducts: results[2] as List<ProductPurchaseCount>,
+        topSpendingProducts: results[3] as List<ProductSpendingTotal>,
+        budgetExceededResult: results[4] as BudgetExceededResult,
+      );
+    });

@@ -21,7 +21,9 @@ void main() {
   group('ShoppingListsTable', () {
     test('inserts and retrieves a list', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: 'list-1',
               name: 'Compra do mês',
@@ -41,7 +43,9 @@ void main() {
 
     test('nullable fields default to null', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: 'list-2',
               name: 'Lista simples',
@@ -50,9 +54,9 @@ void main() {
             ),
           );
 
-      final row =
-          await (db.select(db.shoppingListsTable)..where((t) => t.id.equals('list-2')))
-              .getSingle();
+      final row = await (db.select(
+        db.shoppingListsTable,
+      )..where((t) => t.id.equals('list-2'))).getSingle();
       expect(row.userId, isNull);
       expect(row.marketName, isNull);
       expect(row.budgetGoalCents, isNull);
@@ -61,7 +65,9 @@ void main() {
 
     test('updates a list', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: 'list-3',
               name: 'Lista original',
@@ -70,18 +76,23 @@ void main() {
             ),
           );
 
-      await (db.update(db.shoppingListsTable)..where((t) => t.id.equals('list-3')))
-          .write(const ShoppingListsTableCompanion(name: Value('Lista atualizada')));
+      await (db.update(
+        db.shoppingListsTable,
+      )..where((t) => t.id.equals('list-3'))).write(
+        const ShoppingListsTableCompanion(name: Value('Lista atualizada')),
+      );
 
-      final row =
-          await (db.select(db.shoppingListsTable)..where((t) => t.id.equals('list-3')))
-              .getSingle();
+      final row = await (db.select(
+        db.shoppingListsTable,
+      )..where((t) => t.id.equals('list-3'))).getSingle();
       expect(row.name, 'Lista atualizada');
     });
 
     test('deletes a list', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: 'list-4',
               name: 'Para deletar',
@@ -90,7 +101,9 @@ void main() {
             ),
           );
 
-      await (db.delete(db.shoppingListsTable)..where((t) => t.id.equals('list-4'))).go();
+      await (db.delete(
+        db.shoppingListsTable,
+      )..where((t) => t.id.equals('list-4'))).go();
 
       final rows = await db.select(db.shoppingListsTable).get();
       expect(rows, isEmpty);
@@ -99,7 +112,9 @@ void main() {
     test('retrieves multiple lists', () async {
       final now = DateTime.now();
       for (var i = 1; i <= 3; i++) {
-        await db.into(db.shoppingListsTable).insert(
+        await db
+            .into(db.shoppingListsTable)
+            .insert(
               ShoppingListsTableCompanion.insert(
                 id: 'list-$i',
                 name: 'Lista $i',
@@ -120,7 +135,9 @@ void main() {
     setUp(() async {
       listId = 'list-items-1';
       final now = DateTime.now();
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: listId,
               name: 'Lista com itens',
@@ -132,7 +149,9 @@ void main() {
 
     test('inserts and retrieves an item', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingItemsTable).insert(
+      await db
+          .into(db.shoppingItemsTable)
+          .insert(
             ShoppingItemsTableCompanion.insert(
               id: 'item-1',
               listId: listId,
@@ -154,7 +173,9 @@ void main() {
 
     test('item nullable fields default to null', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingItemsTable).insert(
+      await db
+          .into(db.shoppingItemsTable)
+          .insert(
             ShoppingItemsTableCompanion.insert(
               id: 'item-2',
               listId: listId,
@@ -167,9 +188,9 @@ void main() {
             ),
           );
 
-      final row =
-          await (db.select(db.shoppingItemsTable)..where((t) => t.id.equals('item-2')))
-              .getSingle();
+      final row = await (db.select(
+        db.shoppingItemsTable,
+      )..where((t) => t.id.equals('item-2'))).getSingle();
       expect(row.brand, isNull);
       expect(row.pricePerKgCents, isNull);
       expect(row.weightKg, isNull);
@@ -181,7 +202,9 @@ void main() {
     test('cascade deletes items when list is deleted', () async {
       final now = DateTime.now();
       for (var i = 1; i <= 3; i++) {
-        await db.into(db.shoppingItemsTable).insert(
+        await db
+            .into(db.shoppingItemsTable)
+            .insert(
               ShoppingItemsTableCompanion.insert(
                 id: 'item-cascade-$i',
                 listId: listId,
@@ -197,7 +220,9 @@ void main() {
 
       expect(await db.select(db.shoppingItemsTable).get(), hasLength(3));
 
-      await (db.delete(db.shoppingListsTable)..where((t) => t.id.equals(listId))).go();
+      await (db.delete(
+        db.shoppingListsTable,
+      )..where((t) => t.id.equals(listId))).go();
 
       final items = await db.select(db.shoppingItemsTable).get();
       expect(items, isEmpty);
@@ -205,7 +230,9 @@ void main() {
 
     test('weight-based item stores pricePerKgCents and weightKg', () async {
       final now = DateTime.now();
-      await db.into(db.shoppingItemsTable).insert(
+      await db
+          .into(db.shoppingItemsTable)
+          .insert(
             ShoppingItemsTableCompanion.insert(
               id: 'item-kg',
               listId: listId,
@@ -221,9 +248,9 @@ void main() {
             ),
           );
 
-      final row =
-          await (db.select(db.shoppingItemsTable)..where((t) => t.id.equals('item-kg')))
-              .getSingle();
+      final row = await (db.select(
+        db.shoppingItemsTable,
+      )..where((t) => t.id.equals('item-kg'))).getSingle();
       expect(row.isWeightBased, true);
       expect(row.pricePerKgCents, 8000);
       expect(row.weightKg, 0.5);
@@ -236,7 +263,9 @@ void main() {
     setUp(() async {
       listId = 'list-purchase-1';
       final now = DateTime.now();
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: listId,
               name: 'Compra finalizada',
@@ -248,7 +277,9 @@ void main() {
 
     test('inserts and retrieves a purchase', () async {
       final now = DateTime.now();
-      await db.into(db.purchasesTable).insert(
+      await db
+          .into(db.purchasesTable)
+          .insert(
             PurchasesTableCompanion.insert(
               id: 'purchase-1',
               userId: 'user-1',
@@ -271,7 +302,9 @@ void main() {
     setUp(() async {
       final now = DateTime.now();
       const listId = 'list-pi-1';
-      await db.into(db.shoppingListsTable).insert(
+      await db
+          .into(db.shoppingListsTable)
+          .insert(
             ShoppingListsTableCompanion.insert(
               id: listId,
               name: 'Lista',
@@ -280,7 +313,9 @@ void main() {
             ),
           );
       purchaseId = 'purchase-pi-1';
-      await db.into(db.purchasesTable).insert(
+      await db
+          .into(db.purchasesTable)
+          .insert(
             PurchasesTableCompanion.insert(
               id: purchaseId,
               userId: 'user-1',
@@ -292,7 +327,9 @@ void main() {
     });
 
     test('inserts purchase items linked to a purchase', () async {
-      await db.into(db.purchaseItemsTable).insert(
+      await db
+          .into(db.purchaseItemsTable)
+          .insert(
             PurchaseItemsTableCompanion.insert(
               id: 'pi-1',
               purchaseId: purchaseId,

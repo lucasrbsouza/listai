@@ -24,7 +24,10 @@ class WelcomeScreen extends ConsumerWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 32.0,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -65,7 +68,10 @@ class WelcomeScreen extends ConsumerWidget {
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: theme.colorScheme.primary, width: 2),
+                    side: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 2,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -83,7 +89,9 @@ class WelcomeScreen extends ConsumerWidget {
                 // Offline Action
                 TextButton(
                   onPressed: () async {
-                    await ref.read(isOfflineModeProvider.notifier).setOfflineMode(true);
+                    await ref
+                        .read(isOfflineModeProvider.notifier)
+                        .setOfflineMode(true);
                     if (context.mounted) {
                       context.go('/');
                     }

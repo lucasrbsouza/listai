@@ -20,29 +20,45 @@ void main() {
   test('returns top spending products from repository', () async {
     final products = [
       ProductSpendingTotal(
-          productName: 'Carne', productType: 'Carnes', total: Money.fromReais(300)),
+        productName: 'Carne',
+        productType: 'Carnes',
+        total: Money.fromReais(300),
+      ),
       ProductSpendingTotal(
-          productName: 'Queijo', productType: 'Laticínios', total: Money.fromReais(100)),
+        productName: 'Queijo',
+        productType: 'Laticínios',
+        total: Money.fromReais(100),
+      ),
     ];
-    when(() => repo.getTopSpendingProducts(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-          limit: any(named: 'limit'),
-        )).thenAnswer((_) async => products);
+    when(
+      () => repo.getTopSpendingProducts(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => products);
 
-    final result = await useCase(AnalyticsPeriod.monthly, referenceDate: refDate);
+    final result = await useCase(
+      AnalyticsPeriod.monthly,
+      referenceDate: refDate,
+    );
 
     expect(result, equals(products));
   });
 
   test('empty period returns empty list', () async {
-    when(() => repo.getTopSpendingProducts(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-          limit: any(named: 'limit'),
-        )).thenAnswer((_) async => []);
+    when(
+      () => repo.getTopSpendingProducts(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => []);
 
-    final result = await useCase(AnalyticsPeriod.yearly, referenceDate: refDate);
+    final result = await useCase(
+      AnalyticsPeriod.yearly,
+      referenceDate: refDate,
+    );
 
     expect(result, isEmpty);
   });
@@ -50,35 +66,53 @@ void main() {
   test('products sorted by total descending', () async {
     final products = [
       ProductSpendingTotal(
-          productName: 'Carne', productType: 'Carnes', total: Money.fromReais(300)),
+        productName: 'Carne',
+        productType: 'Carnes',
+        total: Money.fromReais(300),
+      ),
       ProductSpendingTotal(
-          productName: 'Pão', productType: 'Padaria', total: Money.fromReais(50)),
+        productName: 'Pão',
+        productType: 'Padaria',
+        total: Money.fromReais(50),
+      ),
     ];
-    when(() => repo.getTopSpendingProducts(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-          limit: any(named: 'limit'),
-        )).thenAnswer((_) async => products);
+    when(
+      () => repo.getTopSpendingProducts(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => products);
 
-    final result = await useCase(AnalyticsPeriod.monthly, referenceDate: refDate);
+    final result = await useCase(
+      AnalyticsPeriod.monthly,
+      referenceDate: refDate,
+    );
 
-    expect(result.first.total.cents, greaterThanOrEqualTo(result.last.total.cents));
+    expect(
+      result.first.total.cents,
+      greaterThanOrEqualTo(result.last.total.cents),
+    );
   });
 
   test('uses correct date range for yearly period', () async {
-    when(() => repo.getTopSpendingProducts(
-          startDate: any(named: 'startDate'),
-          endDate: any(named: 'endDate'),
-          limit: any(named: 'limit'),
-        )).thenAnswer((_) async => []);
+    when(
+      () => repo.getTopSpendingProducts(
+        startDate: any(named: 'startDate'),
+        endDate: any(named: 'endDate'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => []);
 
     await useCase(AnalyticsPeriod.yearly, referenceDate: refDate);
 
-    final captured = verify(() => repo.getTopSpendingProducts(
-          startDate: captureAny(named: 'startDate'),
-          endDate: captureAny(named: 'endDate'),
-          limit: captureAny(named: 'limit'),
-        )).captured;
+    final captured = verify(
+      () => repo.getTopSpendingProducts(
+        startDate: captureAny(named: 'startDate'),
+        endDate: captureAny(named: 'endDate'),
+        limit: captureAny(named: 'limit'),
+      ),
+    ).captured;
 
     final start = captured[0] as DateTime;
     expect(start, equals(DateTime(2023, 6, 15)));

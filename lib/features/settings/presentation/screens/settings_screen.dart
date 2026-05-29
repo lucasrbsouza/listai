@@ -66,7 +66,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAuthenticatedCard(final BuildContext context, final WidgetRef ref, final String email) {
+  Widget _buildAuthenticatedCard(
+    final BuildContext context,
+    final WidgetRef ref,
+    final String email,
+  ) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -88,18 +92,27 @@ class SettingsScreen extends ConsumerWidget {
                     children: [
                       const Text(
                         'Conta Conectada',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         email,
-                        style: const TextStyle(color: Colors.black54, fontSize: 14),
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
                     borderRadius: BorderRadius.circular(12),
@@ -125,11 +138,16 @@ class SettingsScreen extends ConsumerWidget {
                   backgroundColor: Colors.red[50],
                   foregroundColor: Colors.red[700],
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   side: BorderSide(color: Colors.red[100]!),
                 ),
                 icon: const Icon(Icons.logout),
-                label: const Text('Desconectar / Sair', style: TextStyle(fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Desconectar / Sair',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 onPressed: () async {
                   await ref.read(authRepositoryProvider).signOut();
                   if (context.mounted) {
@@ -157,7 +175,11 @@ class SettingsScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: Colors.orange[100],
-                  child: Icon(Icons.cloud_off, size: 30, color: Colors.orange[700]),
+                  child: Icon(
+                    Icons.cloud_off,
+                    size: 30,
+                    color: Colors.orange[700],
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -166,7 +188,10 @@ class SettingsScreen extends ConsumerWidget {
                     children: [
                       const Text(
                         'Modo Off-line / Local',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       const Text(
@@ -187,13 +212,20 @@ class SettingsScreen extends ConsumerWidget {
                   backgroundColor: Colors.blue[600],
                   foregroundColor: Colors.white,
                   elevation: 1,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 icon: const Icon(Icons.login),
-                label: const Text('Fazer Login / Criar Conta', style: TextStyle(fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Fazer Login / Criar Conta',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 onPressed: () async {
                   // Exit offline mode so router redirects back to welcome screen
-                  await ref.read(isOfflineModeProvider.notifier).setOfflineMode(false);
+                  await ref
+                      .read(isOfflineModeProvider.notifier)
+                      .setOfflineMode(false);
                   if (context.mounted) {
                     context.go('/welcome');
                   }
@@ -219,9 +251,14 @@ class SettingsScreen extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[600],
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: const Text('Ir para Tela de Login', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Ir para Tela de Login',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             onPressed: () {
               context.go('/welcome');
             },
@@ -231,7 +268,10 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSyncControlsCard(final BuildContext context, final WidgetRef ref) {
+  Widget _buildSyncControlsCard(
+    final BuildContext context,
+    final WidgetRef ref,
+  ) {
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -242,7 +282,10 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.sync, color: Colors.blue[600]),
-              title: const Text('Sincronização Forçada', style: TextStyle(fontWeight: FontWeight.bold)),
+              title: const Text(
+                'Sincronização Forçada',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: const Text('Forçar upload de dados pendentes locais.'),
               trailing: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -252,7 +295,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 onPressed: () async {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Sincronizando com o Supabase...')),
+                    const SnackBar(
+                      content: Text('Sincronizando com o Supabase...'),
+                    ),
                   );
                   await ref.read(syncManagerProvider).sync();
                 },
@@ -263,8 +308,13 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.move_to_inbox, color: Colors.green[600]),
-              title: const Text('Migrar Dados Locais', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('Vincula listas off-line criadas nesta conta.'),
+              title: const Text(
+                'Migrar Dados Locais',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: const Text(
+                'Vincula listas off-line criadas nesta conta.',
+              ),
               trailing: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[50],
@@ -273,7 +323,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 onPressed: () async {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Migrando dados offline para a nuvem...')),
+                    const SnackBar(
+                      content: Text('Migrando dados offline para a nuvem...'),
+                    ),
                   );
                   await ref.read(syncManagerProvider).migrateLocalToCloud();
                 },
@@ -298,15 +350,27 @@ class SettingsScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Versão do App', style: TextStyle(color: Colors.black54)),
-                Text('1.0.0 (TDD/Offline-First)', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  '1.0.0 (TDD/Offline-First)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             Divider(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Status da Conexão', style: TextStyle(color: Colors.black54)),
-                Text('Supabase Integrado', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                Text(
+                  'Status da Conexão',
+                  style: TextStyle(color: Colors.black54),
+                ),
+                Text(
+                  'Supabase Integrado',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ],

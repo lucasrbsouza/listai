@@ -15,8 +15,9 @@ abstract class ShoppingListMapper {
       userId: row.userId,
       name: row.name,
       marketName: row.marketName,
-      budgetGoal:
-          row.budgetGoalCents != null ? Money.fromCents(row.budgetGoalCents!) : null,
+      budgetGoal: row.budgetGoalCents != null
+          ? Money.fromCents(row.budgetGoalCents!)
+          : null,
       items: itemRows.map(ShoppingItemMapper.toEntity).toList(),
       isCompleted: row.isCompleted,
       isTemplate: row.isTemplate,

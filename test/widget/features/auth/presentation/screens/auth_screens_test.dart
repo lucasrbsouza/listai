@@ -14,6 +14,7 @@ import 'package:listai/features/auth/domain/repositories/auth_repository.dart';
 import 'package:listai/core/errors/failures.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockUser extends Mock implements supabase.User {}
 
 class FakeOfflineNotifier extends OfflineModeNotifier {
@@ -37,7 +38,9 @@ void main() {
     mockAuthRepository = MockAuthRepository();
     fakeOfflineNotifier = FakeOfflineNotifier(false);
 
-    when(() => mockAuthRepository.authStateChanges()).thenAnswer((_) => Stream.value(null));
+    when(
+      () => mockAuthRepository.authStateChanges(),
+    ).thenAnswer((_) => Stream.value(null));
     when(() => mockAuthRepository.currentUser).thenReturn(null);
   });
 
@@ -83,11 +86,19 @@ void main() {
         findsOneWidget,
       );
       expect(find.widgetWithText(ElevatedButton, 'Entrar'), findsOneWidget);
-      expect(find.widgetWithText(OutlinedButton, 'Criar conta'), findsOneWidget);
-      expect(find.widgetWithText(TextButton, 'Continuar sem login'), findsOneWidget);
+      expect(
+        find.widgetWithText(OutlinedButton, 'Criar conta'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(TextButton, 'Continuar sem login'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('clicking Continuar sem login sets offline mode to true', (tester) async {
+    testWidgets('clicking Continuar sem login sets offline mode to true', (
+      tester,
+    ) async {
       await tester.pumpWidget(createWidgetUnderTest(const WelcomeScreen()));
       await tester.pumpAndSettle();
 
@@ -117,30 +128,55 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Entrar'));
       await tester.pump();
 
-      expect(find.text('Por favor, informe seu email', skipOffstage: false), findsOneWidget);
-      expect(find.text('Senha deve ter pelo menos 8 caracteres', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text('Por favor, informe seu email', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Senha deve ter pelo menos 8 caracteres',
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
 
       // Enter invalid password format (no numbers)
-      await tester.enterText(find.byType(TextFormField).first, 'test@example.com');
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'test@example.com',
+      );
       await tester.enterText(find.byType(TextFormField).last, 'passwordabc');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Entrar'));
       await tester.pump();
 
-      expect(find.text('A senha deve conter pelo menos uma letra e um número', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text(
+          'A senha deve conter pelo menos uma letra e um número',
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('submits and shows loading state on success', (tester) async {
       final mockUser = MockUser();
-      when(() => mockAuthRepository.signInWithEmail('test@example.com', 'Password123'))
-          .thenAnswer((_) async {
-            await Future.delayed(const Duration(milliseconds: 50));
-            return mockUser;
-          });
+      when(
+        () => mockAuthRepository.signInWithEmail(
+          'test@example.com',
+          'Password123',
+        ),
+      ).thenAnswer((_) async {
+        await Future.delayed(const Duration(milliseconds: 50));
+        return mockUser;
+      });
 
       await tester.pumpWidget(createWidgetUnderTest(const LoginScreen()));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField).first, 'test@example.com');
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'test@example.com',
+      );
       await tester.enterText(find.byType(TextFormField).last, 'Password123');
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Entrar'));
@@ -155,13 +191,20 @@ void main() {
     });
 
     testWidgets('shows general error on credential failure', (tester) async {
-      when(() => mockAuthRepository.signInWithEmail('test@example.com', 'Password123'))
-          .thenThrow(const AuthFailure('Credenciais inválidas'));
+      when(
+        () => mockAuthRepository.signInWithEmail(
+          'test@example.com',
+          'Password123',
+        ),
+      ).thenThrow(const AuthFailure('Credenciais inválidas'));
 
       await tester.pumpWidget(createWidgetUnderTest(const LoginScreen()));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField).first, 'test@example.com');
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'test@example.com',
+      );
       await tester.enterText(find.byType(TextFormField).last, 'Password123');
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Entrar'));
@@ -172,21 +215,35 @@ void main() {
   });
 
   group('SignUpScreen', () {
-    testWidgets('renders all fields and performs valid sign up', (tester) async {
+    testWidgets('renders all fields and performs valid sign up', (
+      tester,
+    ) async {
       final mockUser = MockUser();
-      when(() => mockAuthRepository.signUpWithEmail('new@example.com', 'SecurePass1'))
-          .thenAnswer((_) async => mockUser);
+      when(
+        () => mockAuthRepository.signUpWithEmail(
+          'new@example.com',
+          'SecurePass1',
+        ),
+      ).thenAnswer((_) async => mockUser);
 
       await tester.pumpWidget(createWidgetUnderTest(const SignUpScreen()));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField).first, 'new@example.com');
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'new@example.com',
+      );
       await tester.enterText(find.byType(TextFormField).last, 'SecurePass1');
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Criar Conta'));
       await tester.pumpAndSettle();
 
-      verify(() => mockAuthRepository.signUpWithEmail('new@example.com', 'SecurePass1')).called(1);
+      verify(
+        () => mockAuthRepository.signUpWithEmail(
+          'new@example.com',
+          'SecurePass1',
+        ),
+      ).called(1);
       expect(find.text('Home Screen Route'), findsOneWidget);
     });
   });

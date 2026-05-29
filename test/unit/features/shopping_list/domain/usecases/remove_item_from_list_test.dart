@@ -7,14 +7,14 @@ import 'package:listai/features/shopping_list/domain/usecases/add_item_to_list.d
 import 'package:listai/features/shopping_list/domain/usecases/remove_item_from_list.dart';
 
 ShoppingItem _item(String id) => ShoppingItem(
-      id: id,
-      productType: 'T',
-      productName: 'P',
-      quantity: Quantity.unit(),
-      unitPrice: Money.fromReais(1),
-      position: 0,
-      createdAt: DateTime(2024),
-    );
+  id: id,
+  productType: 'T',
+  productName: 'P',
+  quantity: Quantity.unit(),
+  unitPrice: Money.fromReais(1),
+  position: 0,
+  createdAt: DateTime(2024),
+);
 
 void main() {
   final add = AddItemToList();

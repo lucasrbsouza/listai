@@ -28,9 +28,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isAuthenticated = user != null;
       final isOffline = isOfflineMode;
 
-      final isLoggingIn = state.matchedLocation == '/login' ||
-                          state.matchedLocation == '/signup' ||
-                          state.matchedLocation == '/welcome';
+      final isLoggingIn =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/signup' ||
+          state.matchedLocation == '/welcome';
 
       if (!isAuthenticated && !isOffline) {
         if (!isLoggingIn) {
@@ -50,10 +51,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
       ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/signup',
         builder: (context, state) => const SignUpScreen(),

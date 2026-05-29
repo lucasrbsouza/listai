@@ -82,11 +82,7 @@ class ProductSpendingTotal {
 
 @immutable
 class DayStatus {
-  const DayStatus({
-    required this.date,
-    this.totalSpent,
-    this.budgetGoal,
-  });
+  const DayStatus({required this.date, this.totalSpent, this.budgetGoal});
 
   final DateTime date;
   final Money? totalSpent;
@@ -95,13 +91,10 @@ class DayStatus {
   bool get hasPurchase => totalSpent != null;
 
   bool get exceeded =>
-      totalSpent != null &&
-      budgetGoal != null &&
-      totalSpent! > budgetGoal!;
+      totalSpent != null && budgetGoal != null && totalSpent! > budgetGoal!;
 
   @override
-  bool operator ==(Object other) =>
-      other is DayStatus && other.date == date;
+  bool operator ==(Object other) => other is DayStatus && other.date == date;
 
   @override
   int get hashCode => date.hashCode;

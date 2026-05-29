@@ -18,19 +18,31 @@ void main() {
     });
 
     test('ValidationFailure equals same message', () {
-      expect(const ValidationFailure('invalid'), equals(const ValidationFailure('invalid')));
+      expect(
+        const ValidationFailure('invalid'),
+        equals(const ValidationFailure('invalid')),
+      );
     });
 
     test('NotFoundFailure equals same message', () {
-      expect(const NotFoundFailure('missing'), equals(const NotFoundFailure('missing')));
+      expect(
+        const NotFoundFailure('missing'),
+        equals(const NotFoundFailure('missing')),
+      );
     });
 
     test('NetworkFailure equals same message', () {
-      expect(const NetworkFailure('timeout'), equals(const NetworkFailure('timeout')));
+      expect(
+        const NetworkFailure('timeout'),
+        equals(const NetworkFailure('timeout')),
+      );
     });
 
     test('AuthFailure equals same message', () {
-      expect(const AuthFailure('unauthorized'), equals(const AuthFailure('unauthorized')));
+      expect(
+        const AuthFailure('unauthorized'),
+        equals(const AuthFailure('unauthorized')),
+      );
     });
 
     test('different Failure types not equal even with same message', () {

@@ -6,7 +6,8 @@ import 'package:listai/features/shopping_list/domain/repositories/shopping_list_
 import 'package:listai/features/shopping_list/presentation/providers/shopping_list_repository_provider.dart';
 import 'package:listai/features/shopping_list/presentation/providers/saved_lists_provider.dart';
 
-class MockShoppingListRepository extends Mock implements ShoppingListRepository {}
+class MockShoppingListRepository extends Mock
+    implements ShoppingListRepository {}
 
 void main() {
   late MockShoppingListRepository mockRepository;
@@ -27,8 +28,22 @@ void main() {
 
   test('loads saved lists from repository successfully', () async {
     final lists = [
-      ShoppingList(id: '1', name: 'Lista 1', items: [], isTemplate: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
-      ShoppingList(id: '2', name: 'Lista 2', items: [], isCompleted: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
+      ShoppingList(
+        id: '1',
+        name: 'Lista 1',
+        items: [],
+        isTemplate: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      ShoppingList(
+        id: '2',
+        name: 'Lista 2',
+        items: [],
+        isCompleted: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
     ];
 
     when(() => mockRepository.getSavedLists()).thenAnswer((_) async => lists);
@@ -37,7 +52,7 @@ void main() {
     expect(savedListsAsync, const AsyncValue<List<ShoppingList>>.loading());
 
     final savedLists = await container.read(savedListsProvider.future);
-    
+
     expect(savedLists, lists);
     verify(() => mockRepository.getSavedLists()).called(1);
   });
@@ -53,5 +68,4 @@ void main() {
       expect(e, exception);
     }
   });
-
 }

@@ -9,15 +9,17 @@ import '../../data/repositories/remote_shopping_list_repository.dart';
 import '../../data/repositories/composite_shopping_list_repository.dart';
 import 'database_provider.dart';
 
-final localShoppingListRepositoryProvider = Provider<LocalShoppingListRepository>((ref) {
-  final db = ref.watch(databaseProvider);
-  return LocalShoppingListRepository(db);
-});
+final localShoppingListRepositoryProvider =
+    Provider<LocalShoppingListRepository>((ref) {
+      final db = ref.watch(databaseProvider);
+      return LocalShoppingListRepository(db);
+    });
 
-final remoteShoppingListRepositoryProvider = Provider<RemoteShoppingListRepository>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  return RemoteShoppingListRepository(client);
-});
+final remoteShoppingListRepositoryProvider =
+    Provider<RemoteShoppingListRepository>((ref) {
+      final client = ref.watch(supabaseClientProvider);
+      return RemoteShoppingListRepository(client);
+    });
 
 final syncManagerProvider = Provider<SyncManager>((ref) {
   final localRepo = ref.watch(localShoppingListRepositoryProvider);

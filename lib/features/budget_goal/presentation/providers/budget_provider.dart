@@ -7,32 +7,31 @@ import 'package:listai/features/shopping_list/presentation/providers/current_lis
 final budgetProvider = StreamProvider<BudgetCheckResult>((ref) {
   final checkBudget = CheckBudgetExceeded();
   final controller = StreamController<BudgetCheckResult>();
-  
-  final sub = ref.listen<AsyncValue<ShoppingList?>>(
-    currentListProvider,
-    (previous, next) {
-      next.when(
-        data: (list) {
-          if (list == null) {
-            controller.add(const NoBudgetSet());
-          } else {
-            controller.add(checkBudget(list));
-          }
-        },
-        error: (_, __) {
+
+  final sub = ref.listen<AsyncValue<ShoppingList?>>(currentListProvider, (
+    previous,
+    next,
+  ) {
+    next.when(
+      data: (list) {
+        if (list == null) {
           controller.add(const NoBudgetSet());
-        },
-        loading: () {},
-      );
-    },
-    fireImmediately: true,
-  );
-  
+        } else {
+          controller.add(checkBudget(list));
+        }
+      },
+      error: (_, __) {
+        controller.add(const NoBudgetSet());
+      },
+      loading: () {},
+    );
+  }, fireImmediately: true);
+
   ref.onDispose(() {
     sub.close();
     controller.close();
   });
-  
+
   return controller.stream;
 });
 
