@@ -260,6 +260,16 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
     await _updateStateAndRepository(updatedList);
   }
 
+  Future<void> saveAsTemplate() async {
+    final currentList = state.value;
+    if (currentList == null) return;
+    try {
+      await _repository.saveAsTemplate(currentList);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
   Future<void> undo() async {
     if (_history.isEmpty) return;
 
