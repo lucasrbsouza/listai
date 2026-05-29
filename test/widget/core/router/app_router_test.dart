@@ -105,10 +105,10 @@ void main() {
     expect(find.byType(CurrentListScreen), findsOneWidget);
   });
 
-  testWidgets('tap on FAB navigates to ItemFormScreen in creation mode', (
+  testWidgets('tap on Adicionar Item navigates to ItemFormScreen in creation mode', (
     WidgetTester tester,
   ) async {
-    // Must have an active list for the FAB to navigate to /item/new
+    // Must have an active list for the button to navigate to /item/new
     final list = ShoppingList(
       id: '1',
       name: 'Lista Teste',
@@ -120,8 +120,8 @@ void main() {
     await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
     await tester.pumpAndSettle();
 
-    final fab = find.byType(FloatingActionButton);
-    await tester.tap(fab);
+    final addButton = find.text('Adicionar Item');
+    await tester.tap(addButton);
     await tester.pumpAndSettle();
 
     expect(find.byType(ItemFormScreen), findsOneWidget);
@@ -131,7 +131,7 @@ void main() {
   testWidgets('back button from ItemFormScreen returns to CurrentListScreen', (
     WidgetTester tester,
   ) async {
-    // Must have an active list for the FAB to navigate to /item/new
+    // Must have an active list for the button to navigate to /item/new
     final list = ShoppingList(
       id: '1',
       name: 'Lista Teste',
@@ -144,7 +144,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Go to ItemFormScreen
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.tap(find.text('Adicionar Item'));
     await tester.pumpAndSettle();
 
     // Tap back button
