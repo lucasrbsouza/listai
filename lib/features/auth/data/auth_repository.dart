@@ -31,9 +31,13 @@ class SupabaseAuthRepository implements AuthRepository {
       );
       return response.user;
     } on AuthException catch (e) {
+      if (e.message.contains('Email not confirmed')) {
+        throw const AuthFailure(
+          'Email não confirmado. Verifique sua caixa de entrada e confirme o cadastro antes de entrar.',
+        );
+      }
       if (e.message.contains('Invalid login credentials') ||
-          e.message.contains('invalid_credentials') ||
-          e.message.contains('Email not confirmed')) {
+          e.message.contains('invalid_credentials')) {
         throw const AuthFailure('Credenciais inválidas');
       }
       throw AuthFailure(e.message);

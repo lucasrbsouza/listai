@@ -67,11 +67,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _passwordController.text,
       );
       if (mounted) {
-        try {
-          context.go('/');
-        } catch (_) {
-          Navigator.pushReplacementNamed(context, '/');
-        }
+        context.go('/');
       }
     } catch (e) {
       final message = e is Failure ? e.message : e.toString().replaceAll('Exception: ', '');
