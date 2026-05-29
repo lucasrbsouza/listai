@@ -44,12 +44,12 @@
 - [x] **Passo 3.4** — Roteamento (GoRouter)
 - [x] **Passo 3.5** — Tela de Listas Salvas
 
-## Fase 4 — Features Avançadas
+## CONCLUIDO Fase 4 — Features Avançadas
 
 - [x] **Passo 4.1** — Captura de Foto da Etiqueta
 - [x] **Passo 4.2** — Substituto do Item
-- [ ] **Passo 4.3** — Meta de Orçamento
-- [ ] **Passo 4.4** — Excluir tudo com Undo
+- [x] **Passo 4.3** — Meta de Orçamento
+- [x] **Passo 4.4** — Excluir tudo com Undo
 
 ## Fase 5 — Backend (Supabase)
 
