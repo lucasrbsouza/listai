@@ -103,60 +103,77 @@ void main() {
   });
 
   group('PptxFormatter', () {
-    test('generates valid pptx and pages slides correctly (10 items per slide)', () async {
-      final formatter = PptxFormatter();
-      expect(formatter.format, equals(ExportFormat.pptx));
+    test(
+      'generates valid pptx and pages slides correctly (10 items per slide)',
+      () async {
+        final formatter = PptxFormatter();
+        expect(formatter.format, equals(ExportFormat.pptx));
 
-      // Test with small list (2 items -> 1 capa + 1 content slide = 2 slides total)
-      final fileSmall = await formatter.export(smallList);
-      expect(fileSmall.path.endsWith('.pptx'), isTrue);
+        // Test with small list (2 items -> 1 capa + 1 content slide = 2 slides total)
+        final fileSmall = await formatter.export(smallList);
+        expect(fileSmall.path.endsWith('.pptx'), isTrue);
 
-      final bytesSmall = await fileSmall.readAsBytes();
-      final archiveSmall = ZipDecoder().decodeBytes(bytesSmall);
-      expect(archiveSmall, isNotNull);
+        final bytesSmall = await fileSmall.readAsBytes();
+        final archiveSmall = ZipDecoder().decodeBytes(bytesSmall);
+        expect(archiveSmall, isNotNull);
 
-      // Verify slides exist
-      expect(archiveSmall!.findFile('ppt/slides/slide1.xml'), isNotNull);
-      expect(archiveSmall.findFile('ppt/slides/slide2.xml'), isNotNull);
-      expect(archiveSmall.findFile('ppt/slides/slide3.xml'), isNull); // Only 2 slides
+        // Verify slides exist
+        expect(archiveSmall!.findFile('ppt/slides/slide1.xml'), isNotNull);
+        expect(archiveSmall.findFile('ppt/slides/slide2.xml'), isNotNull);
+        expect(
+          archiveSmall.findFile('ppt/slides/slide3.xml'),
+          isNull,
+        ); // Only 2 slides
 
-      final capaContent = String.fromCharCodes(archiveSmall.findFile('ppt/slides/slide1.xml')!.content as List<int>);
-      expect(capaContent, contains('Lista Pequena'));
-      expect(capaContent, contains('Super Nova Era'));
-      expect(capaContent, contains('35,00'));
+        final capaContent = String.fromCharCodes(
+          archiveSmall.findFile('ppt/slides/slide1.xml')!.content as List<int>,
+        );
+        expect(capaContent, contains('Lista Pequena'));
+        expect(capaContent, contains('Super Nova Era'));
+        expect(capaContent, contains('35,00'));
 
-      final slide2Content = String.fromCharCodes(archiveSmall.findFile('ppt/slides/slide2.xml')!.content as List<int>);
-      expect(slide2Content, contains('Arroz integral'));
-      expect(slide2Content, contains('Suco de Maçã'));
+        final slide2Content = String.fromCharCodes(
+          archiveSmall.findFile('ppt/slides/slide2.xml')!.content as List<int>,
+        );
+        expect(slide2Content, contains('Arroz integral'));
+        expect(slide2Content, contains('Suco de Maçã'));
 
-      // Test with large list (15 items -> 1 capa + 2 content slides = 3 slides total)
-      final fileLarge = await formatter.export(largeList);
-      final bytesLarge = await fileLarge.readAsBytes();
-      final archiveLarge = ZipDecoder().decodeBytes(bytesLarge);
-      expect(archiveLarge, isNotNull);
+        // Test with large list (15 items -> 1 capa + 2 content slides = 3 slides total)
+        final fileLarge = await formatter.export(largeList);
+        final bytesLarge = await fileLarge.readAsBytes();
+        final archiveLarge = ZipDecoder().decodeBytes(bytesLarge);
+        expect(archiveLarge, isNotNull);
 
-      expect(archiveLarge!.findFile('ppt/slides/slide1.xml'), isNotNull);
-      expect(archiveLarge.findFile('ppt/slides/slide2.xml'), isNotNull);
-      expect(archiveLarge.findFile('ppt/slides/slide3.xml'), isNotNull);
-      expect(archiveLarge.findFile('ppt/slides/slide4.xml'), isNull); // Exactly 3 slides
+        expect(archiveLarge!.findFile('ppt/slides/slide1.xml'), isNotNull);
+        expect(archiveLarge.findFile('ppt/slides/slide2.xml'), isNotNull);
+        expect(archiveLarge.findFile('ppt/slides/slide3.xml'), isNotNull);
+        expect(
+          archiveLarge.findFile('ppt/slides/slide4.xml'),
+          isNull,
+        ); // Exactly 3 slides
 
-      final slide2LargeContent = String.fromCharCodes(archiveLarge.findFile('ppt/slides/slide2.xml')!.content as List<int>);
-      expect(slide2LargeContent, contains('Produto 0'));
-      expect(slide2LargeContent, contains('Produto 9'));
-      expect(slide2LargeContent, isNot(contains('Produto 10')));
+        final slide2LargeContent = String.fromCharCodes(
+          archiveLarge.findFile('ppt/slides/slide2.xml')!.content as List<int>,
+        );
+        expect(slide2LargeContent, contains('Produto 0'));
+        expect(slide2LargeContent, contains('Produto 9'));
+        expect(slide2LargeContent, isNot(contains('Produto 10')));
 
-      final slide3LargeContent = String.fromCharCodes(archiveLarge.findFile('ppt/slides/slide3.xml')!.content as List<int>);
-      expect(slide3LargeContent, contains('Produto 10'));
-      expect(slide3LargeContent, contains('Produto 14'));
-      expect(slide3LargeContent, isNot(contains('Produto 9')));
+        final slide3LargeContent = String.fromCharCodes(
+          archiveLarge.findFile('ppt/slides/slide3.xml')!.content as List<int>,
+        );
+        expect(slide3LargeContent, contains('Produto 10'));
+        expect(slide3LargeContent, contains('Produto 14'));
+        expect(slide3LargeContent, isNot(contains('Produto 9')));
 
-      // Clean up
-      if (await fileSmall.exists()) {
-        await fileSmall.delete();
-      }
-      if (await fileLarge.exists()) {
-        await fileLarge.delete();
-      }
-    });
+        // Clean up
+        if (await fileSmall.exists()) {
+          await fileSmall.delete();
+        }
+        if (await fileLarge.exists()) {
+          await fileLarge.delete();
+        }
+      },
+    );
   });
 }

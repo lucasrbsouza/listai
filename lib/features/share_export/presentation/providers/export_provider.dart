@@ -7,12 +7,7 @@ import '../../domain/docx_formatter.dart';
 import '../../domain/pptx_formatter.dart';
 
 final exportFormattersProvider = Provider<List<ExportFormatter>>((ref) {
-  return [
-    PdfFormatter(),
-    TxtFormatter(),
-    DocxFormatter(),
-    PptxFormatter(),
-  ];
+  return [PdfFormatter(), TxtFormatter(), DocxFormatter(), PptxFormatter()];
 });
 
 final exportServiceProvider = Provider<ExportService>((ref) {
@@ -20,10 +15,9 @@ final exportServiceProvider = Provider<ExportService>((ref) {
   return ExportService(
     formatters: formatters,
     shareFile: (filePath) async {
-      await Share.shareXFiles(
-        [XFile(filePath)],
-        subject: 'Minha Lista de Compras',
-      );
+      await Share.shareXFiles([
+        XFile(filePath),
+      ], subject: 'Minha Lista de Compras');
     },
   );
 });

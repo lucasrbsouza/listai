@@ -53,10 +53,9 @@ class LocalShoppingListRepository implements ShoppingListRepository {
 
   @override
   Future<List<ShoppingList>> getSavedLists() async {
-    final rows =
-        await (_db.select(_db.shoppingListsTable)
-              ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
-            .get();
+    final rows = await (_db.select(
+      _db.shoppingListsTable,
+    )..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])).get();
 
     return Future.wait(rows.map(_loadListWithItems));
   }

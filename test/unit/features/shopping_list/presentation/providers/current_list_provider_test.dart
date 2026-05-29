@@ -456,9 +456,7 @@ void main() {
     final sub = container.listen(currentListProvider, (_, __) {});
     await Future<void>.delayed(Duration.zero);
 
-    await container
-        .read(currentListProvider.notifier)
-        .renameList('Novo Nome');
+    await container.read(currentListProvider.notifier).renameList('Novo Nome');
 
     verifyNever(() => mockRepository.saveCurrentList(any()));
     sub.close();
@@ -494,9 +492,7 @@ void main() {
     final sub = container.listen(currentListProvider, (_, __) {});
     await Future<void>.delayed(Duration.zero);
 
-    await container
-        .read(currentListProvider.notifier)
-        .updateMarketName(null);
+    await container.read(currentListProvider.notifier).updateMarketName(null);
 
     final updated = container.read(currentListProvider).value!;
     expect(updated.marketName, isNull);

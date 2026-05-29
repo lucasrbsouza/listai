@@ -16,7 +16,9 @@ class DocxFormatter implements ExportFormatter {
       if (file.existsSync()) {
         bytes = file.readAsBytesSync();
       } else {
-        final data = await rootBundle.load('assets/templates/list_template.docx');
+        final data = await rootBundle.load(
+          'assets/templates/list_template.docx',
+        );
         bytes = data.buffer.asUint8List();
       }
     } catch (_) {
@@ -32,17 +34,25 @@ class DocxFormatter implements ExportFormatter {
     // Format items table and total
     final tableSb = StringBuffer();
     for (final item in list.items) {
-      final nameStr = item.brand != null ? '${item.productName} (${item.brand})' : item.productName;
-      final qtyStr = item.isWeightBased ? '${item.weightKg!.value} kg' : '${item.quantity.value}';
-      final pUnitStr = item.isWeightBased 
-          ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg' 
+      final nameStr = item.brand != null
+          ? '${item.productName} (${item.brand})'
+          : item.productName;
+      final qtyStr = item.isWeightBased
+          ? '${item.weightKg!.value} kg'
+          : '${item.quantity.value}';
+      final pUnitStr = item.isWeightBased
+          ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg'
           : 'R\$ ${item.unitPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
-      final totalStr = 'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
-      tableSb.writeln('${item.productType} | $nameStr | $qtyStr | $pUnitStr | $totalStr');
+      final totalStr =
+          'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
+      tableSb.writeln(
+        '${item.productType} | $nameStr | $qtyStr | $pUnitStr | $totalStr',
+      );
     }
 
     final itemsTableString = tableSb.toString();
-    final totalString = 'R\$ ${list.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
+    final totalString =
+        'R\$ ${list.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
 
     final outputArchive = Archive();
 
@@ -53,12 +63,10 @@ class DocxFormatter implements ExportFormatter {
             .replaceAll('{{list_name}}', list.name)
             .replaceAll('{{items_table}}', itemsTableString)
             .replaceAll('{{total}}', totalString);
-        
-        outputArchive.addFile(ArchiveFile(
-          file.name,
-          replaced.codeUnits.length,
-          replaced.codeUnits,
-        ));
+
+        outputArchive.addFile(
+          ArchiveFile(file.name, replaced.codeUnits.length, replaced.codeUnits),
+        );
       } else {
         outputArchive.addFile(file);
       }
@@ -70,7 +78,9 @@ class DocxFormatter implements ExportFormatter {
     }
 
     final tempDir = Directory.systemTemp;
-    final outputFile = File('${tempDir.path}/export_${list.id}_${DateTime.now().millisecondsSinceEpoch}.docx');
+    final outputFile = File(
+      '${tempDir.path}/export_${list.id}_${DateTime.now().millisecondsSinceEpoch}.docx',
+    );
     await outputFile.writeAsBytes(encoded);
     return outputFile;
   }

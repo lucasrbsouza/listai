@@ -12,10 +12,7 @@ class ExportService {
   final List<ExportFormatter> formatters;
   final Future<void> Function(String filePath) shareFile;
 
-  ExportService({
-    required this.formatters,
-    required this.shareFile,
-  });
+  ExportService({required this.formatters, required this.shareFile});
 
   Future<void> exportAndShare(ShoppingList list, ExportFormat format) async {
     final formatter = formatters.firstWhere(

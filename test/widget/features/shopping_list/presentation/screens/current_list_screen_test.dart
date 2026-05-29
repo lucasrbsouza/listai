@@ -97,11 +97,17 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> activateList(ShoppingList list) async {}
 
   @override
-  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
+  Future<void> duplicateAndUseList(
+    ShoppingList list, {
+    String? newName,
+  }) async {}
 }
 
 void main() {
-  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier, {int initialTab = 2}) {
+  Widget createWidgetUnderTest(
+    FakeCurrentListNotifier notifier, {
+    int initialTab = 2,
+  }) {
     return ProviderScope(
       overrides: [
         currentListProvider.overrideWith((ref) => notifier),
@@ -180,7 +186,10 @@ void main() {
     await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 0));
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Usar uma lista já existente ou criar uma nova lista'), findsOneWidget);
+    expect(
+      find.text('Usar uma lista já existente ou criar uma nova lista'),
+      findsOneWidget,
+    );
     expect(find.text('Criar Nova Lista'), findsOneWidget);
   });
 

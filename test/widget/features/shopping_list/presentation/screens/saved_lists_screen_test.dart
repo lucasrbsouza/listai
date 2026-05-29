@@ -12,7 +12,8 @@ import 'package:listai/features/shopping_list/presentation/providers/current_lis
 import 'package:listai/features/shopping_list/presentation/screens/saved_lists_screen.dart';
 import 'package:listai/core/utils/money.dart';
 
-class MockShoppingListRepository extends Mock implements ShoppingListRepository {}
+class MockShoppingListRepository extends Mock
+    implements ShoppingListRepository {}
 
 class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     implements CurrentListNotifier {
@@ -47,11 +48,13 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> activateList(ShoppingList list) async {
     activatedList = list;
   }
+
   @override
   Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {
     duplicatedList = list;
     duplicatedNewName = newName;
   }
+
   @override
   Future<void> updateBudgetGoal(Money? budgetGoal) async {}
   @override
@@ -85,7 +88,9 @@ void main() {
     required List<ShoppingList> lists,
     FakeCurrentListNotifier? currentListNotifier,
   }) {
-    final notifier = currentListNotifier ?? FakeCurrentListNotifier(const AsyncValue.data(null));
+    final notifier =
+        currentListNotifier ??
+        FakeCurrentListNotifier(const AsyncValue.data(null));
     return ProviderScope(
       overrides: [
         shoppingListRepositoryProvider.overrideWithValue(mockRepository),
@@ -98,7 +103,8 @@ void main() {
           routes: [
             GoRoute(
               path: '/',
-              builder: (context, state) => const Scaffold(body: Text('Home Screen')),
+              builder: (context, state) =>
+                  const Scaffold(body: Text('Home Screen')),
             ),
             GoRoute(
               path: '/saved',
@@ -110,7 +116,9 @@ void main() {
     );
   }
 
-  testWidgets('renders tabs and shows empty active lists state by default', (WidgetTester tester) async {
+  testWidgets('renders tabs and shows empty active lists state by default', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(createWidgetUnderTest(lists: []));
     await tester.pumpAndSettle();
 
@@ -119,7 +127,9 @@ void main() {
     expect(find.text('Nenhuma lista em andamento ainda.'), findsOneWidget);
   });
 
-  testWidgets('renders active lists and allows opening and duplicating', (WidgetTester tester) async {
+  testWidgets('renders active lists and allows opening and duplicating', (
+    WidgetTester tester,
+  ) async {
     final lists = [
       ShoppingList(
         id: 'active-1',
@@ -131,11 +141,13 @@ void main() {
     ];
     final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
 
-    await tester.pumpWidget(createWidgetUnderTest(lists: lists, currentListNotifier: notifier));
+    await tester.pumpWidget(
+      createWidgetUnderTest(lists: lists, currentListNotifier: notifier),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Feira Semanal'), findsOneWidget);
-    
+
     // Tap "Abrir Lista"
     final abrirButton = find.text('Abrir Lista');
     expect(abrirButton, findsOneWidget);
@@ -146,41 +158,48 @@ void main() {
     expect(notifier.activatedList!.id, 'active-1');
   });
 
-  testWidgets('renders templates tab when clicked and allows creating list from it', (WidgetTester tester) async {
-    final lists = [
-      ShoppingList(
-        id: 'tmpl-1',
-        name: 'Modelo Churrasco',
-        items: [],
-        isTemplate: true,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      ),
-    ];
-    final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
+  testWidgets(
+    'renders templates tab when clicked and allows creating list from it',
+    (WidgetTester tester) async {
+      final lists = [
+        ShoppingList(
+          id: 'tmpl-1',
+          name: 'Modelo Churrasco',
+          items: [],
+          isTemplate: true,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ];
+      final notifier = FakeCurrentListNotifier(const AsyncValue.data(null));
 
-    await tester.pumpWidget(createWidgetUnderTest(lists: lists, currentListNotifier: notifier));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        createWidgetUnderTest(lists: lists, currentListNotifier: notifier),
+      );
+      await tester.pumpAndSettle();
 
-    // Switch to Modelos / Templates tab
-    final templateTab = find.text('Modelos / Templates');
-    expect(templateTab, findsOneWidget);
-    await tester.tap(templateTab);
-    await tester.pumpAndSettle();
+      // Switch to Modelos / Templates tab
+      final templateTab = find.text('Modelos / Templates');
+      expect(templateTab, findsOneWidget);
+      await tester.tap(templateTab);
+      await tester.pumpAndSettle();
 
-    expect(find.text('Modelo Churrasco'), findsOneWidget);
+      expect(find.text('Modelo Churrasco'), findsOneWidget);
 
-    final useButton = find.text('Criar lista deste modelo');
-    expect(useButton, findsOneWidget);
-    await tester.tap(useButton);
-    await tester.pumpAndSettle();
+      final useButton = find.text('Criar lista deste modelo');
+      expect(useButton, findsOneWidget);
+      await tester.tap(useButton);
+      await tester.pumpAndSettle();
 
-    expect(notifier.duplicatedList, isNotNull);
-    expect(notifier.duplicatedList!.id, 'tmpl-1');
-    expect(notifier.duplicatedNewName, 'Modelo Churrasco');
-  });
+      expect(notifier.duplicatedList, isNotNull);
+      expect(notifier.duplicatedList!.id, 'tmpl-1');
+      expect(notifier.duplicatedNewName, 'Modelo Churrasco');
+    },
+  );
 
-  testWidgets('shows delete confirmation dialog and deletes list on confirm', (WidgetTester tester) async {
+  testWidgets('shows delete confirmation dialog and deletes list on confirm', (
+    WidgetTester tester,
+  ) async {
     final lists = [
       ShoppingList(
         id: 'active-1',

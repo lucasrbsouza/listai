@@ -304,10 +304,12 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
     const uuid = Uuid();
 
     final newItems = list.items
-        .map((i) => i.copyWith(
-              id: uuid.v4(),
-              clearSubstituteItemId: i.substituteItemId == null,
-            ))
+        .map(
+          (i) => i.copyWith(
+            id: uuid.v4(),
+            clearSubstituteItemId: i.substituteItemId == null,
+          ),
+        )
         .toList();
 
     final newList = ShoppingList(
@@ -322,7 +324,6 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
 
     await _updateStateAndRepository(newList);
   }
-
 
   Future<void> updateBudgetGoal(Money? budgetGoal) async {
     final currentList = state.value;

@@ -77,7 +77,10 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> activateList(ShoppingList list) async {}
 
   @override
-  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
+  Future<void> duplicateAndUseList(
+    ShoppingList list, {
+    String? newName,
+  }) async {}
 }
 
 class FakePhotoRepository implements PhotoRepository {

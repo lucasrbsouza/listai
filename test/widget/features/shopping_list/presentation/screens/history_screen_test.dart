@@ -6,9 +6,7 @@ import 'package:listai/features/shopping_list/presentation/providers/saved_lists
 import 'package:listai/features/shopping_list/presentation/screens/history_screen.dart';
 
 void main() {
-  Widget createWidgetUnderTest({
-    required List<ShoppingList> lists,
-  }) {
+  Widget createWidgetUnderTest({required List<ShoppingList> lists}) {
     return ProviderScope(
       overrides: [
         savedListsProvider.overrideWith((ref) => Future.value(lists)),
@@ -17,12 +15,15 @@ void main() {
     );
   }
 
-  testWidgets('renders completed purchases and shows empty state when none exist', (WidgetTester tester) async {
-    await tester.pumpWidget(createWidgetUnderTest(lists: []));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'renders completed purchases and shows empty state when none exist',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(createWidgetUnderTest(lists: []));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Nenhuma compra finalizada ainda.'), findsOneWidget);
-  });
+      expect(find.text('Nenhuma compra finalizada ainda.'), findsOneWidget);
+    },
+  );
 
   testWidgets('renders history items and does not render templates', (
     WidgetTester tester,

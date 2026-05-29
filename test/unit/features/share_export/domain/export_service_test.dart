@@ -33,21 +33,15 @@ void main() {
     pdfExportedLists = [];
     txtExportedLists = [];
 
-    fakePdfFormatter = FakeExportFormatter(
-      ExportFormat.pdf,
-      (list) async {
-        pdfExportedLists.add(list);
-        return FakeFile('/path/to/test.pdf');
-      },
-    );
+    fakePdfFormatter = FakeExportFormatter(ExportFormat.pdf, (list) async {
+      pdfExportedLists.add(list);
+      return FakeFile('/path/to/test.pdf');
+    });
 
-    fakeTxtFormatter = FakeExportFormatter(
-      ExportFormat.txt,
-      (list) async {
-        txtExportedLists.add(list);
-        return FakeFile('/path/to/test.txt');
-      },
-    );
+    fakeTxtFormatter = FakeExportFormatter(ExportFormat.txt, (list) async {
+      txtExportedLists.add(list);
+      return FakeFile('/path/to/test.txt');
+    });
 
     sharedFilePaths = [];
     exportService = ExportService(

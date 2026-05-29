@@ -34,7 +34,8 @@ class PdfFormatter implements ExportFormatter {
                           fontWeight: pw.FontWeight.bold,
                         ),
                       ),
-                      if (list.marketName != null && list.marketName!.isNotEmpty)
+                      if (list.marketName != null &&
+                          list.marketName!.isNotEmpty)
                         pw.Padding(
                           padding: const pw.EdgeInsets.only(top: 4),
                           child: pw.Text(
@@ -57,24 +58,25 @@ class PdfFormatter implements ExportFormatter {
             pw.TableHelper.fromTextArray(
               headers: ['Tipo', 'Nome', 'Qtd', 'Preço Unit', 'Total'],
               data: list.items.map((item) {
-                final nameStr = item.brand != null ? '${item.productName} (${item.brand})' : item.productName;
-                final qtyStr = item.isWeightBased ? '${item.weightKg!.value} kg' : '${item.quantity.value}';
-                final pUnitStr = item.isWeightBased 
-                    ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg' 
+                final nameStr = item.brand != null
+                    ? '${item.productName} (${item.brand})'
+                    : item.productName;
+                final qtyStr = item.isWeightBased
+                    ? '${item.weightKg!.value} kg'
+                    : '${item.quantity.value}';
+                final pUnitStr = item.isWeightBased
+                    ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg'
                     : 'R\$ ${item.unitPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
-                final totalStr = 'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
+                final totalStr =
+                    'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
 
-                return [
-                  item.productType,
-                  nameStr,
-                  qtyStr,
-                  pUnitStr,
-                  totalStr,
-                ];
+                return [item.productType, nameStr, qtyStr, pUnitStr, totalStr];
               }).toList(),
               headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
               cellAlignment: pw.Alignment.centerLeft,
-              headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              headerDecoration: const pw.BoxDecoration(
+                color: PdfColors.grey300,
+              ),
             ),
             pw.SizedBox(height: 20),
 
@@ -85,11 +87,17 @@ class PdfFormatter implements ExportFormatter {
               children: [
                 pw.Text(
                   'TOTAL GERAL:',
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 pw.Text(
                   'R\$ ${list.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}',
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -98,7 +106,10 @@ class PdfFormatter implements ExportFormatter {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
-                  pw.Text('Meta de Orçamento:', style: const pw.TextStyle(fontSize: 12)),
+                  pw.Text(
+                    'Meta de Orçamento:',
+                    style: const pw.TextStyle(fontSize: 12),
+                  ),
                   pw.Text(
                     'R\$ ${list.budgetGoal!.reais.toStringAsFixed(2).replaceAll('.', ',')}',
                     style: const pw.TextStyle(fontSize: 12),
@@ -113,7 +124,9 @@ class PdfFormatter implements ExportFormatter {
                     list.exceedsBudget ? 'Excesso:' : 'Status:',
                     style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
-                      color: list.exceedsBudget ? PdfColors.red : PdfColors.green,
+                      color: list.exceedsBudget
+                          ? PdfColors.red
+                          : PdfColors.green,
                       fontSize: 12,
                     ),
                   ),
@@ -123,7 +136,9 @@ class PdfFormatter implements ExportFormatter {
                         : 'Dentro do Orçamento',
                     style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
-                      color: list.exceedsBudget ? PdfColors.red : PdfColors.green,
+                      color: list.exceedsBudget
+                          ? PdfColors.red
+                          : PdfColors.green,
                       fontSize: 12,
                     ),
                   ),
@@ -136,7 +151,9 @@ class PdfFormatter implements ExportFormatter {
     );
 
     final tempDir = Directory.systemTemp;
-    final file = File('${tempDir.path}/export_${list.id}_${DateTime.now().millisecondsSinceEpoch}.pdf');
+    final file = File(
+      '${tempDir.path}/export_${list.id}_${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
     await file.writeAsBytes(await pdf.save());
     return file;
   }

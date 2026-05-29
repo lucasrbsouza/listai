@@ -23,14 +23,8 @@ class SavedListsScreen extends ConsumerWidget {
           title: const Text('Listas Salvas'),
           bottom: const TabBar(
             tabs: [
-              Tab(
-                icon: Icon(Icons.list_alt),
-                text: 'Minhas Listas',
-              ),
-              Tab(
-                icon: Icon(Icons.bookmark),
-                text: 'Modelos / Templates',
-              ),
+              Tab(icon: Icon(Icons.list_alt), text: 'Minhas Listas'),
+              Tab(icon: Icon(Icons.bookmark), text: 'Modelos / Templates'),
             ],
           ),
         ),
@@ -38,7 +32,9 @@ class SavedListsScreen extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Erro ao carregar: $err')),
           data: (lists) {
-            final activeLists = lists.where((l) => !l.isTemplate && !l.isCompleted).toList();
+            final activeLists = lists
+                .where((l) => !l.isTemplate && !l.isCompleted)
+                .toList();
             final templates = lists.where((l) => l.isTemplate).toList();
 
             return TabBarView(
@@ -59,9 +55,7 @@ class SavedListsScreen extends ConsumerWidget {
     List<ShoppingList> activeLists,
   ) {
     if (activeLists.isEmpty) {
-      return const Center(
-        child: Text('Nenhuma lista em andamento ainda.'),
-      );
+      return const Center(child: Text('Nenhuma lista em andamento ainda.'));
     }
 
     return RefreshIndicator(
@@ -116,11 +110,18 @@ class SavedListsScreen extends ConsumerWidget {
                       Expanded(
                         child: FilledButton.icon(
                           onPressed: () {
-                            ref.read(currentListProvider.notifier).activateList(list);
-                            ref.read(currentTabIndexProvider.notifier).state = 2;
+                            ref
+                                .read(currentListProvider.notifier)
+                                .activateList(list);
+                            ref.read(currentTabIndexProvider.notifier).state =
+                                2;
                             ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Lista "${list.name}" aberta com sucesso!')),
+                              SnackBar(
+                                content: Text(
+                                  'Lista "${list.name}" aberta com sucesso!',
+                                ),
+                              ),
                             );
                           },
                           icon: const Icon(Icons.play_arrow),
@@ -131,11 +132,16 @@ class SavedListsScreen extends ConsumerWidget {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            ref.read(currentListProvider.notifier).duplicateAndUseList(list);
-                            ref.read(currentTabIndexProvider.notifier).state = 2;
+                            ref
+                                .read(currentListProvider.notifier)
+                                .duplicateAndUseList(list);
+                            ref.read(currentTabIndexProvider.notifier).state =
+                                2;
                             ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Lista duplicada com sucesso!')),
+                              const SnackBar(
+                                content: Text('Lista duplicada com sucesso!'),
+                              ),
                             );
                           },
                           icon: const Icon(Icons.copy),
@@ -159,9 +165,7 @@ class SavedListsScreen extends ConsumerWidget {
     List<ShoppingList> templates,
   ) {
     if (templates.isEmpty) {
-      return const Center(
-        child: Text('Nenhum template salvo ainda.'),
-      );
+      return const Center(child: Text('Nenhum template salvo ainda.'));
     }
 
     return RefreshIndicator(
@@ -200,7 +204,8 @@ class SavedListsScreen extends ConsumerWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _confirmDeleteList(context, ref, template),
+                        onPressed: () =>
+                            _confirmDeleteList(context, ref, template),
                         tooltip: 'Excluir template',
                       ),
                     ],
@@ -211,11 +216,20 @@ class SavedListsScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     onPressed: () {
-                      ref.read(currentListProvider.notifier).duplicateAndUseList(template, newName: template.name);
+                      ref
+                          .read(currentListProvider.notifier)
+                          .duplicateAndUseList(
+                            template,
+                            newName: template.name,
+                          );
                       ref.read(currentTabIndexProvider.notifier).state = 2;
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Nova lista criada a partir do modelo!')),
+                        const SnackBar(
+                          content: Text(
+                            'Nova lista criada a partir do modelo!',
+                          ),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.add),
@@ -253,9 +267,7 @@ class SavedListsScreen extends ConsumerWidget {
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: Colors.red),
               child: const Text('Excluir'),
             ),
           ],

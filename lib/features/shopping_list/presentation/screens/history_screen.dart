@@ -14,9 +14,7 @@ class HistoryScreen extends ConsumerWidget {
     final savedListsAsync = ref.watch(savedListsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Histórico de Compras'),
-      ),
+      appBar: AppBar(title: const Text('Histórico de Compras')),
       body: savedListsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Erro ao carregar: $err')),

@@ -98,15 +98,13 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
             return _buildEmptyActiveListPlaceholder(context);
           }
 
-          final substituteIds =
-              list.items
-                  .map((item) => item.substituteItemId)
-                  .whereType<String>()
-                  .toSet();
-          final rootItems =
-              list.items
-                  .where((item) => !substituteIds.contains(item.id))
-                  .toList();
+          final substituteIds = list.items
+              .map((item) => item.substituteItemId)
+              .whereType<String>()
+              .toSet();
+          final rootItems = list.items
+              .where((item) => !substituteIds.contains(item.id))
+              .toList();
 
           return Column(
             children: [
@@ -158,7 +156,8 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
           ? AppBar(
               title: (currentIndex == 2 && hasActiveList)
                   ? GestureDetector(
-                      onTap: () => _showRenameListDialog(context, ref, currentList.name),
+                      onTap: () =>
+                          _showRenameListDialog(context, ref, currentList.name),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -172,7 +171,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                           Icon(
                             Icons.edit,
                             size: 16,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ],
                       ),
@@ -210,9 +211,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         children: [
                           Icon(Icons.add),
                           SizedBox(width: 8),
-                          Expanded(
-                            child: Text('Nova lista'),
-                          ),
+                          Expanded(child: Text('Nova lista')),
                         ],
                       ),
                     ),
@@ -223,9 +222,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                           children: [
                             Icon(Icons.edit),
                             SizedBox(width: 8),
-                            Expanded(
-                              child: Text('Renomear lista'),
-                            ),
+                            Expanded(child: Text('Renomear lista')),
                           ],
                         ),
                       ),
@@ -235,9 +232,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                           children: [
                             Icon(Icons.share),
                             SizedBox(width: 8),
-                            Expanded(
-                              child: Text('Exportar lista'),
-                            ),
+                            Expanded(child: Text('Exportar lista')),
                           ],
                         ),
                       ),
@@ -247,9 +242,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                           children: [
                             Icon(Icons.delete_sweep),
                             SizedBox(width: 8),
-                            Expanded(
-                              child: Text('Limpar tudo'),
-                            ),
+                            Expanded(child: Text('Limpar tudo')),
                           ],
                         ),
                       ),
@@ -260,9 +253,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         children: [
                           Icon(Icons.history),
                           SizedBox(width: 8),
-                          Expanded(
-                            child: Text('Histórico de compras'),
-                          ),
+                          Expanded(child: Text('Histórico de compras')),
                         ],
                       ),
                     ),
@@ -272,9 +263,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         children: [
                           Icon(Icons.settings),
                           SizedBox(width: 8),
-                          Expanded(
-                            child: Text('Configurações'),
-                          ),
+                          Expanded(child: Text('Configurações')),
                         ],
                       ),
                     ),
@@ -301,11 +290,17 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(currentIndex == 1 ? Icons.bar_chart : Icons.bar_chart_outlined),
+            icon: Icon(
+              currentIndex == 1 ? Icons.bar_chart : Icons.bar_chart_outlined,
+            ),
             label: 'Analíticos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(currentIndex == 2 ? Icons.shopping_cart : Icons.shopping_cart_outlined),
+            icon: Icon(
+              currentIndex == 2
+                  ? Icons.shopping_cart
+                  : Icons.shopping_cart_outlined,
+            ),
             label: 'Lista',
           ),
           const BottomNavigationBarItem(
@@ -314,7 +309,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
             tooltip: 'Criar lista',
           ),
           BottomNavigationBarItem(
-            icon: Icon(currentIndex == 4 ? Icons.bookmark : Icons.bookmark_border),
+            icon: Icon(
+              currentIndex == 4 ? Icons.bookmark : Icons.bookmark_border,
+            ),
             label: 'Salvas',
           ),
         ],
@@ -357,7 +354,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -373,7 +370,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -385,7 +382,8 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
           const SizedBox(height: 24),
           heatmapAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('Erro ao carregar metas: $err')),
+            error: (err, stack) =>
+                Center(child: Text('Erro ao carregar metas: $err')),
             data: (statuses) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -396,7 +394,10 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                       SizedBox(width: 8),
                       Text(
                         'Metas — Último Ano',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -411,7 +412,8 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                       onDayTap: (status) {
                         if (!status.hasPurchase) return;
                         final spent = status.totalSpent?.format() ?? '';
-                        final dateStr = '${status.date.day.toString().padLeft(2, '0')}/${status.date.month.toString().padLeft(2, '0')}';
+                        final dateStr =
+                            '${status.date.day.toString().padLeft(2, '0')}/${status.date.month.toString().padLeft(2, '0')}';
                         final text = status.budgetGoal == null
                             ? '$dateStr — Gasto: $spent'
                             : '$dateStr — Gasto: $spent de ${status.budgetGoal!.format()} (meta)';
@@ -458,10 +460,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
           ),
         ),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.grey, fontSize: 10),
-        ),
+        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 10)),
       ],
     );
   }
@@ -489,11 +488,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
         padding: const EdgeInsets.all(16.0),
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
-          onTap: () => _showEditMarketNameDialog(
-            context,
-            ref,
-            marketName,
-          ),
+          onTap: () => _showEditMarketNameDialog(context, ref, marketName),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -511,7 +506,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: marketName != null && marketName.isNotEmpty
                         ? Theme.of(context).colorScheme.onSurface
-                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.5),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -792,14 +789,13 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
       ),
     );
   }
+
   Future<void> _showEditMarketNameDialog(
     BuildContext context,
     WidgetRef ref,
     String? currentMarketName,
   ) async {
-    final controller = TextEditingController(
-      text: currentMarketName ?? '',
-    );
+    final controller = TextEditingController(text: currentMarketName ?? '');
     await showDialog<void>(
       context: context,
       builder: (context) {
@@ -1167,7 +1163,11 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
     );
   }
 
-  void _showExportBottomSheet(BuildContext context, WidgetRef ref, ShoppingList list) {
+  void _showExportBottomSheet(
+    BuildContext context,
+    WidgetRef ref,
+    ShoppingList list,
+  ) {
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -1183,16 +1183,18 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
               children: [
                 Text(
                   'Exportar lista',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Escolha o formato ideal para compartilhar sua lista:',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -1203,7 +1205,12 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         icon: Icons.picture_as_pdf,
                         color: Colors.red,
                         label: 'PDF',
-                        onTap: () => _performExport(context, ref, list, ExportFormat.pdf),
+                        onTap: () => _performExport(
+                          context,
+                          ref,
+                          list,
+                          ExportFormat.pdf,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -1213,7 +1220,12 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         icon: Icons.text_fields,
                         color: Colors.blue,
                         label: 'TXT',
-                        onTap: () => _performExport(context, ref, list, ExportFormat.txt),
+                        onTap: () => _performExport(
+                          context,
+                          ref,
+                          list,
+                          ExportFormat.txt,
+                        ),
                       ),
                     ),
                   ],
@@ -1227,7 +1239,12 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         icon: Icons.description,
                         color: Colors.indigo,
                         label: 'DOCX',
-                        onTap: () => _performExport(context, ref, list, ExportFormat.docx),
+                        onTap: () => _performExport(
+                          context,
+                          ref,
+                          list,
+                          ExportFormat.docx,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -1237,7 +1254,12 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                         icon: Icons.slideshow,
                         color: Colors.orange,
                         label: 'PPTX',
-                        onTap: () => _performExport(context, ref, list, ExportFormat.pptx),
+                        onTap: () => _performExport(
+                          context,
+                          ref,
+                          list,
+                          ExportFormat.pptx,
+                        ),
                       ),
                     ),
                   ],
@@ -1290,22 +1312,20 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
     ExportFormat format,
   ) async {
     Navigator.of(context).pop(); // Close bottom sheet
-    
+
     // Show a loading overlay or dialog
     unawaited(
       showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       ),
     );
 
     try {
       final exportService = ref.read(exportServiceProvider);
       await exportService.exportAndShare(list, format);
-      
+
       // Close loading dialog
       if (context.mounted) {
         Navigator.of(context).pop();

@@ -62,7 +62,10 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> activateList(ShoppingList list) async {}
 
   @override
-  Future<void> duplicateAndUseList(ShoppingList list, {String? newName}) async {}
+  Future<void> duplicateAndUseList(
+    ShoppingList list, {
+    String? newName,
+  }) async {}
 }
 
 class FakeOfflineNotifier extends OfflineModeNotifier {
@@ -78,7 +81,10 @@ class FakeOfflineNotifier extends OfflineModeNotifier {
 }
 
 void main() {
-  Widget createWidgetUnderTest(FakeCurrentListNotifier notifier, {int initialTab = 2}) {
+  Widget createWidgetUnderTest(
+    FakeCurrentListNotifier notifier, {
+    int initialTab = 2,
+  }) {
     return ProviderScope(
       overrides: [
         currentListProvider.overrideWith((ref) => notifier),
@@ -105,28 +111,29 @@ void main() {
     expect(find.byType(CurrentListScreen), findsOneWidget);
   });
 
-  testWidgets('tap on Adicionar Item navigates to ItemFormScreen in creation mode', (
-    WidgetTester tester,
-  ) async {
-    // Must have an active list for the button to navigate to /item/new
-    final list = ShoppingList(
-      id: '1',
-      name: 'Lista Teste',
-      items: [],
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
-    await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'tap on Adicionar Item navigates to ItemFormScreen in creation mode',
+    (WidgetTester tester) async {
+      // Must have an active list for the button to navigate to /item/new
+      final list = ShoppingList(
+        id: '1',
+        name: 'Lista Teste',
+        items: [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+      await tester.pumpWidget(createWidgetUnderTest(notifier, initialTab: 2));
+      await tester.pumpAndSettle();
 
-    final addButton = find.text('Adicionar Item');
-    await tester.tap(addButton);
-    await tester.pumpAndSettle();
+      final addButton = find.text('Adicionar Item');
+      await tester.tap(addButton);
+      await tester.pumpAndSettle();
 
-    expect(find.byType(ItemFormScreen), findsOneWidget);
-    expect(find.text('Adicionar Item'), findsOneWidget);
-  });
+      expect(find.byType(ItemFormScreen), findsOneWidget);
+      expect(find.text('Adicionar Item'), findsOneWidget);
+    },
+  );
 
   testWidgets('back button from ItemFormScreen returns to CurrentListScreen', (
     WidgetTester tester,
