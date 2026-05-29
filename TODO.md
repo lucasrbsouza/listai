@@ -53,9 +53,9 @@
 
 ## Fase 5 — Backend (Supabase)
 
-- [ ] **Passo 5.1** — Setup Supabase + Auth
-- [ ] **Passo 5.2** — RemoteShoppingListRepository
-- [ ] **Passo 5.3** — SyncManager (offline ↔ online)
+- [x] **Passo 5.1** — Setup Supabase + Auth
+- [x] **Passo 5.2** — RemoteShoppingListRepository
+- [x] **Passo 5.3** — SyncManager (offline ↔ online)
 
 ## Fase 6 — Analytics
 
