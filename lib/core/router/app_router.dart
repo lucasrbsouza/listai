@@ -15,6 +15,7 @@ import 'package:listai/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:listai/features/auth/presentation/screens/login_screen.dart';
 import 'package:listai/features/auth/presentation/screens/signup_screen.dart';
 import 'package:listai/features/auth/presentation/providers/auth_providers.dart';
+import 'package:listai/features/analytics/presentation/screens/analytics_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -96,6 +97,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final list = state.extra as ShoppingList;
           return ListDetailScreen(shoppingList: list);
         },
+      ),
+      GoRoute(
+        path: '/analytics',
+        builder: (context, state) => const AnalyticsScreen(),
       ),
     ],
   );
