@@ -27,8 +27,16 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     required ShoppingItem substitute,
   }) async {}
 
+  bool clearAllCalled = false;
+  bool saveAsTemplateCalled = false;
+
   @override
-  Future<void> clearAll() async {}
+  Future<void> clearAll() async {
+    clearAllCalled = true;
+    if (state.hasValue && state.value != null) {
+      state = AsyncValue.data(state.value!.copyWith(items: []));
+    }
+  }
 
   @override
   Future<void> finalizePurchase() async {
@@ -63,6 +71,11 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
 
   @override
   Future<void> updateBudgetGoal(Money? budgetGoal) async {}
+
+  @override
+  Future<void> saveAsTemplate() async {
+    saveAsTemplateCalled = true;
+  }
 
   @override
   void dispose() {
@@ -438,5 +451,86 @@ void main() {
     await tester.pumpWidget(createWidgetUnderTest(notifier));
 
     expect(find.byTooltip('Adicionar item'), findsOneWidget);
+  });
+
+  testWidgets('tap Limpar tudo shows dialog, Cancel does not clear list', (WidgetTester tester) async {
+    final item = createItem(id: '1', name: 'Arroz', unitPrice: Money.fromReais(5.0), quantity: Quantity(1.0));
+    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
+    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+
+    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    await tester.pumpAndSettle();
+
+    // Tap on More menu / PopupMenuButton
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+
+    // Tap "Limpar tudo" option
+    await tester.tap(find.text('Limpar tudo'));
+    await tester.pumpAndSettle();
+
+    // Verify dialog appears
+    expect(find.text('Limpar lista atual?'), findsOneWidget);
+
+    // Tap Cancel
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+
+    // Verify notifier was not called and dialog is dismissed
+    expect(notifier.clearAllCalled, isFalse);
+    expect(find.text('Limpar lista atual?'), findsNothing);
+  });
+
+  testWidgets('tap Limpar tudo in dialog clears list and shows SnackBar with Desfazer which calls undo', (WidgetTester tester) async {
+    final item = createItem(id: '1', name: 'Arroz', unitPrice: Money.fromReais(5.0), quantity: Quantity(1.0));
+    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
+    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+
+    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Limpar tudo'));
+    await tester.pumpAndSettle();
+
+    // Tap "Limpar tudo" in the dialog
+    await tester.tap(find.widgetWithText(FilledButton, 'Limpar tudo'));
+    await tester.pumpAndSettle();
+
+    // Verify notifier.clearAll was called
+    expect(notifier.clearAllCalled, isTrue);
+
+    // SnackBar appears
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('Lista limpa.'), findsOneWidget);
+
+    // Tap "Desfazer" in SnackBar
+    await tester.tap(find.text('Desfazer'));
+    await tester.pump();
+
+    expect(notifier.undoCalled, isTrue);
+  });
+
+  testWidgets('tap Salvar como template antes de limpar calls saveAsTemplate and clears list', (WidgetTester tester) async {
+    final item = createItem(id: '1', name: 'Arroz', unitPrice: Money.fromReais(5.0), quantity: Quantity(1.0));
+    final list = createList(name: 'Lista', marketName: 'Mercado', items: [item]);
+    final notifier = FakeCurrentListNotifier(AsyncValue.data(list));
+
+    await tester.pumpWidget(createWidgetUnderTest(notifier));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Limpar tudo'));
+    await tester.pumpAndSettle();
+
+    // Tap "Salvar como template antes de limpar"
+    await tester.tap(find.text('Salvar como template antes de limpar'));
+    await tester.pumpAndSettle();
+
+    // Verify saveAsTemplate and clearAll were called
+    expect(notifier.saveAsTemplateCalled, isTrue);
+    expect(notifier.clearAllCalled, isTrue);
   });
 }

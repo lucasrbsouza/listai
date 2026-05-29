@@ -56,6 +56,20 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
             },
             tooltip: 'Configurações',
           ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'clear') {
+                _showClearAllDialog(context, ref);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem<String>(
+                value: 'clear',
+                child: Text('Limpar tudo'),
+              ),
+            ],
+          ),
         ],
       ),
       body: listState.when(
@@ -486,6 +500,61 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
           ],
         );
       },
+    );
+  }
+
+  Future<void> _showClearAllDialog(BuildContext context, WidgetRef ref) async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Limpar lista atual?'),
+          content: const Text('Tem certeza? Você poderá desfazer esta ação.'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await ref.read(currentListProvider.notifier).saveAsTemplate();
+                await ref.read(currentListProvider.notifier).clearAll();
+                if (context.mounted) {
+                  _showClearedSnackbar(context, ref);
+                }
+              },
+              child: const Text('Salvar como template antes de limpar'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await ref.read(currentListProvider.notifier).clearAll();
+                if (context.mounted) {
+                  _showClearedSnackbar(context, ref);
+                }
+              },
+              child: const Text('Limpar tudo'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showClearedSnackbar(BuildContext context, WidgetRef ref) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Lista limpa.'),
+        duration: const Duration(seconds: 10),
+        action: SnackBarAction(
+          label: 'Desfazer',
+          onPressed: () {
+            ref.read(currentListProvider.notifier).undo();
+          },
+        ),
+      ),
     );
   }
 }

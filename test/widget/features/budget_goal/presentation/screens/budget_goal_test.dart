@@ -63,6 +63,9 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     }
   }
 
+  @override
+  Future<void> saveAsTemplate() async {}
+
   // mock helper to change state directly in test
   void updateState(ShoppingList newList) {
     state = AsyncValue.data(newList);
