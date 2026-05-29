@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/auth_providers.dart';
 
 class WelcomeScreen extends ConsumerWidget {
@@ -29,46 +30,19 @@ class WelcomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(),
-                // App Branding / Icon
+                // App Branding / Logo (symbol + name + tagline)
                 Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withAlpha(40),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.shopping_basket_rounded,
-                      size: 80,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // App Name
-                Text(
-                  'Listaí',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: theme.colorScheme.primary,
-                    letterSpacing: -1,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // App Subtitle
-                Text(
-                  'Seu gerenciador inteligente de compras de supermercado.',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  child: Image.asset(
+                    'assets/logo/listai-logo-removebg.png',
+                    width: 260,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const Spacer(),
                 // Action Buttons
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/login');
+                    context.push('/login');
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -87,7 +61,7 @@ class WelcomeScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 OutlinedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
+                    context.push('/signup');
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -111,7 +85,7 @@ class WelcomeScreen extends ConsumerWidget {
                   onPressed: () async {
                     await ref.read(isOfflineModeProvider.notifier).setOfflineMode(true);
                     if (context.mounted) {
-                      Navigator.pushReplacementNamed(context, '/');
+                      context.go('/');
                     }
                   },
                   style: TextButton.styleFrom(
