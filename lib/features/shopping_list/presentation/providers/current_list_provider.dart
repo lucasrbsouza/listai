@@ -59,10 +59,19 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
   }
 
   Future<void> addItem(ShoppingItem item) async {
-    final currentList = state.value;
-    if (currentList == null) return;
-
-    _pushHistory(currentList);
+    var currentList = state.value;
+    if (currentList == null) {
+      final now = DateTime.now();
+      currentList = ShoppingList(
+        id: const Uuid().v4(),
+        name: 'Minha Lista',
+        createdAt: now,
+        updatedAt: now,
+        items: [],
+      );
+    } else {
+      _pushHistory(currentList);
+    }
 
     final updatedItems = List<ShoppingItem>.from(currentList.items)..add(item);
     final updatedList = currentList.copyWith(items: updatedItems);
@@ -74,10 +83,19 @@ class CurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>> {
     required ShoppingItem main,
     required ShoppingItem substitute,
   }) async {
-    final currentList = state.value;
-    if (currentList == null) return;
-
-    _pushHistory(currentList);
+    var currentList = state.value;
+    if (currentList == null) {
+      final now = DateTime.now();
+      currentList = ShoppingList(
+        id: const Uuid().v4(),
+        name: 'Minha Lista',
+        createdAt: now,
+        updatedAt: now,
+        items: [],
+      );
+    } else {
+      _pushHistory(currentList);
+    }
 
     final mainPosition = currentList.items.length;
     final linkedMain = main.copyWith(
