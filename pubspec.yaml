@@ -47,6 +47,8 @@ dependencies:
   meta: any
   uuid: ^4.4.0
   sqlite3: any
+  supabase_flutter: ^2.5.0
+  connectivity_plus: ^6.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
