@@ -6,6 +6,7 @@ import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart
 import 'package:listai/features/shopping_list/presentation/providers/saved_lists_provider.dart';
 import 'package:listai/features/shopping_list/presentation/providers/current_list_provider.dart';
 import 'package:listai/features/shopping_list/presentation/screens/saved_lists_screen.dart';
+import 'package:listai/core/utils/money.dart';
 
 class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
     implements CurrentListNotifier {
@@ -37,6 +38,9 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> replaceWithTemplate(ShoppingList template) async {
     replacedList = template;
   }
+
+  @override
+  Future<void> updateBudgetGoal(Money? budgetGoal) async {}
 }
 
 void main() {

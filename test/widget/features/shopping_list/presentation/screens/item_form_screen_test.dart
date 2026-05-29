@@ -54,6 +54,9 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   Future<void> replaceWithTemplate(ShoppingList template) async {}
 
   @override
+  Future<void> updateBudgetGoal(Money? budgetGoal) async {}
+
+  @override
   void dispose() {
     super.dispose();
   }
