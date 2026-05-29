@@ -11,10 +11,52 @@ import 'package:listai/features/shopping_list/presentation/screens/saved_lists_s
 import 'package:listai/features/shopping_list/presentation/screens/list_detail_screen.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_list.dart';
 
+import 'package:listai/features/auth/presentation/screens/welcome_screen.dart';
+import 'package:listai/features/auth/presentation/screens/login_screen.dart';
+import 'package:listai/features/auth/presentation/screens/signup_screen.dart';
+import 'package:listai/features/auth/presentation/providers/auth_providers.dart';
+
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateProvider);
+  final isOfflineMode = ref.watch(isOfflineModeProvider);
+
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      final user = authState.valueOrNull;
+      final isAuthenticated = user != null;
+      final isOffline = isOfflineMode;
+
+      final isLoggingIn = state.matchedLocation == '/login' ||
+                          state.matchedLocation == '/signup' ||
+                          state.matchedLocation == '/welcome';
+
+      if (!isAuthenticated && !isOffline) {
+        if (!isLoggingIn) {
+          return '/welcome';
+        }
+        return null;
+      }
+
+      if ((isAuthenticated || isOffline) && isLoggingIn) {
+        return '/';
+      }
+
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: '/welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const SignUpScreen(),
+      ),
       GoRoute(
         path: '/',
         builder: (context, state) => const CurrentListScreen(),

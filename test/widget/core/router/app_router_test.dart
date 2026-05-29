@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listai/core/router/app_router.dart';
+import 'package:listai/features/auth/presentation/providers/auth_providers.dart';
 import 'package:listai/features/shopping_list/presentation/screens/current_list_screen.dart';
 import 'package:listai/features/shopping_list/presentation/screens/item_form_screen.dart';
 import 'package:listai/features/settings/presentation/screens/settings_screen.dart';
@@ -47,10 +48,25 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   }
 }
 
+class FakeOfflineNotifier extends OfflineModeNotifier {
+  FakeOfflineNotifier(final bool initial) {
+    state = initial;
+  }
+  @override
+  Future<void> _loadState() async {}
+  @override
+  Future<void> setOfflineMode(final bool offline) async {
+    state = offline;
+  }
+}
+
 void main() {
   Widget createWidgetUnderTest(FakeCurrentListNotifier notifier) {
     return ProviderScope(
-      overrides: [currentListProvider.overrideWith((ref) => notifier)],
+      overrides: [
+        currentListProvider.overrideWith((ref) => notifier),
+        isOfflineModeProvider.overrideWith((ref) => FakeOfflineNotifier(true)),
+      ],
       child: Consumer(
         builder: (context, ref, child) {
           final goRouter = ref.watch(appRouterProvider);
@@ -151,6 +167,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsScreen), findsOneWidget);
-    expect(find.text('Configurações (Em breve)'), findsOneWidget);
+    expect(find.text('Versão do App'), findsOneWidget);
   });
 }
