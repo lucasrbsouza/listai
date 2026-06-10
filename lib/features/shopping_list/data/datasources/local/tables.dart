@@ -11,7 +11,6 @@ class ShoppingListsTable extends Table {
   DateTimeColumn get completedAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
-  TextColumn get syncStatus => text().withDefault(const Constant('synced'))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -25,7 +24,7 @@ class ShoppingItemsTable extends Table {
   TextColumn get productName => text()();
   TextColumn get brand => text().nullable()();
   RealColumn get quantityValue => real()();
-  IntColumn get unitPriceCents => integer()();
+  IntColumn get unitPriceCents => integer().nullable()();
   BoolColumn get isWholesale => boolean().withDefault(const Constant(false))();
   BoolColumn get isWeightBased =>
       boolean().withDefault(const Constant(false))();
@@ -36,7 +35,6 @@ class ShoppingItemsTable extends Table {
   TextColumn get substituteItemId => text().nullable()();
   IntColumn get position => integer()();
   DateTimeColumn get createdAt => dateTime()();
-  TextColumn get syncStatus => text().withDefault(const Constant('synced'))();
 
   @override
   Set<Column> get primaryKey => {id};

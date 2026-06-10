@@ -13,7 +13,9 @@ abstract class ShoppingItemMapper {
       productName: row.productName,
       brand: row.brand,
       quantity: Quantity(row.quantityValue),
-      unitPrice: Money.fromCents(row.unitPriceCents),
+      unitPrice: row.unitPriceCents != null
+          ? Money.fromCents(row.unitPriceCents!)
+          : null,
       isWholesale: row.isWholesale,
       isWeightBased: row.isWeightBased,
       pricePerKg: row.pricePerKgCents != null
@@ -39,7 +41,7 @@ abstract class ShoppingItemMapper {
       productName: Value(entity.productName),
       brand: Value(entity.brand),
       quantityValue: Value(entity.quantity.value),
-      unitPriceCents: Value(entity.unitPrice.cents),
+      unitPriceCents: Value(entity.unitPrice?.cents),
       isWholesale: Value(entity.isWholesale),
       isWeightBased: Value(entity.isWeightBased),
       pricePerKgCents: Value(entity.pricePerKg?.cents),

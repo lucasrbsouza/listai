@@ -605,7 +605,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                 children: [
                   Text(item.productType),
                   Text(
-                    '${item.quantity.value} un. × ${item.unitPrice.format()}',
+                    item.unitPrice != null
+                        ? '${item.quantity.value} un. × ${item.unitPrice!.format()}'
+                        : '${item.quantity.value} un. × preço não informado',
                   ),
                 ],
               ),
@@ -614,7 +616,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    item.totalPrice.format(),
+                    item.hasPrice ? item.totalPrice.format() : 'Sem preço',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -698,7 +700,9 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                           const SizedBox(height: 4),
                           Text(substitute.productType),
                           Text(
-                            '${substitute.quantity.value} un. × ${substitute.unitPrice.format()}',
+                            substitute.unitPrice != null
+                                ? '${substitute.quantity.value} un. × ${substitute.unitPrice!.format()}'
+                                : '${substitute.quantity.value} un. × preço não informado',
                           ),
                           const SizedBox(height: 8),
                           Align(

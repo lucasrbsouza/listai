@@ -533,7 +533,7 @@ void main() {
 
     expect(notifier.addedItem, isNotNull);
     expect(notifier.addedItem!.productName, 'Arroz Branco');
-    expect(notifier.addedItem!.unitPrice.cents, 550);
+    expect(notifier.addedItem!.unitPrice!.cents, 550);
     expect(notifier.addedItem!.quantity.value, 2.0);
     expect(notifier.addedItem!.isWeightBased, isFalse);
     expect(notifier.addedItem!.isWholesale, isFalse);
@@ -693,7 +693,7 @@ void main() {
     expect(notifier.addedItem!.weightKg!.value, 1.5);
     expect(notifier.addedItem!.pricePerKg!.cents, 6000);
     // Unit price and quantity should have fallback values for database compatibility, e.g. price=60, qty=1.5
-    expect(notifier.addedItem!.unitPrice.cents, 6000);
+    expect(notifier.addedItem!.unitPrice!.cents, 6000);
     expect(notifier.addedItem!.quantity.value, 1.5);
   });
 

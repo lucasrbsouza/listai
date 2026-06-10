@@ -39,10 +39,15 @@ class TxtFormatter implements ExportFormatter {
           ? '${item.weightKg!.value} kg'
           : '${item.quantity.value}';
       final pUnit = item.isWeightBased
-          ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg'
-          : 'R\$ ${item.unitPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
-      final total =
-          'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
+          ? (item.pricePerKg != null
+                ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg'
+                : 'sem preço')
+          : (item.unitPrice != null
+                ? 'R\$ ${item.unitPrice!.reais.toStringAsFixed(2).replaceAll('.', ',')}'
+                : 'sem preço');
+      final total = item.hasPrice
+          ? 'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}'
+          : 'sem preço';
 
       sb.writeln(
         '${_pad(tipo, 12)} | ${_pad(nome, 25)} | ${_pad(qtd, 6)} | ${_pad(pUnit, 10)} | $total',

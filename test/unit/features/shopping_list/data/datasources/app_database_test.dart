@@ -36,7 +36,6 @@ void main() {
       expect(rows, hasLength(1));
       expect(rows.first.id, 'list-1');
       expect(rows.first.name, 'Compra do mês');
-      expect(rows.first.syncStatus, 'synced');
       expect(rows.first.isCompleted, false);
       expect(rows.first.isTemplate, false);
     });
@@ -158,7 +157,7 @@ void main() {
               productType: 'Padaria',
               productName: 'Pão de forma',
               quantityValue: 2.0,
-              unitPriceCents: 599,
+              unitPriceCents: const Value(599),
               position: 0,
               createdAt: now,
             ),
@@ -168,7 +167,28 @@ void main() {
       expect(rows, hasLength(1));
       expect(rows.first.productName, 'Pão de forma');
       expect(rows.first.unitPriceCents, 599);
-      expect(rows.first.syncStatus, 'synced');
+    });
+
+    test('item without price stores null unitPriceCents', () async {
+      final now = DateTime.now();
+      await db
+          .into(db.shoppingItemsTable)
+          .insert(
+            ShoppingItemsTableCompanion.insert(
+              id: 'item-no-price',
+              listId: listId,
+              productType: 'Mercearia',
+              productName: 'Arroz',
+              quantityValue: 1.0,
+              position: 0,
+              createdAt: now,
+            ),
+          );
+
+      final row = await (db.select(
+        db.shoppingItemsTable,
+      )..where((t) => t.id.equals('item-no-price'))).getSingle();
+      expect(row.unitPriceCents, isNull);
     });
 
     test('item nullable fields default to null', () async {
@@ -182,7 +202,7 @@ void main() {
               productType: 'Carnes',
               productName: 'Frango',
               quantityValue: 1.0,
-              unitPriceCents: 1500,
+              unitPriceCents: const Value(1500),
               position: 0,
               createdAt: now,
             ),
@@ -211,7 +231,7 @@ void main() {
                 productType: 'Mercado',
                 productName: 'Item $i',
                 quantityValue: 1.0,
-                unitPriceCents: 100,
+                unitPriceCents: const Value(100),
                 position: i - 1,
                 createdAt: now,
               ),
@@ -239,7 +259,7 @@ void main() {
               productType: 'Carnes',
               productName: 'Picanha',
               quantityValue: 1.0,
-              unitPriceCents: 0,
+              unitPriceCents: const Value(0),
               isWeightBased: const Value(true),
               pricePerKgCents: const Value(8000),
               weightKg: const Value(0.5),

@@ -41,11 +41,13 @@ class ListDetailScreen extends StatelessWidget {
                         ),
                         subtitle: Text(
                           item.isWeightBased
-                              ? '\${item.quantity.format()} kg x \${item.unitPrice.format()} /kg'
-                              : '\${item.quantity.format()} un x \${item.unitPrice.format()}',
+                              ? '${item.quantity.value} kg x ${item.pricePerKg?.format() ?? 'preço não informado'} /kg'
+                              : '${item.quantity.value} un x ${item.unitPrice?.format() ?? 'preço não informado'}',
                         ),
                         trailing: Text(
-                          item.totalPrice.format(),
+                          item.hasPrice
+                              ? item.totalPrice.format()
+                              : 'Sem preço',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -72,14 +74,14 @@ class ListDetailScreen extends StatelessWidget {
             const Chip(label: Text('Template'))
           else ...[
             Text(
-              'Data: \$dateStr',
+              'Data: $dateStr',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             if (shoppingList.marketName != null &&
                 shoppingList.marketName!.isNotEmpty)
-              Text('Mercado: \${shoppingList.marketName}'),
+              Text('Mercado: ${shoppingList.marketName}'),
             if (shoppingList.budgetGoal != null)
-              Text('Meta de gastos: \${shoppingList.budgetGoal!.format()}'),
+              Text('Meta de gastos: ${shoppingList.budgetGoal!.format()}'),
           ],
         ],
       ),

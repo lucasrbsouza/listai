@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:listai/core/router/app_router.dart';
-import 'package:listai/features/auth/presentation/providers/auth_providers.dart';
 import 'package:listai/features/shopping_list/presentation/screens/current_list_screen.dart';
 import 'package:listai/features/shopping_list/presentation/screens/item_form_screen.dart';
 import 'package:listai/features/settings/presentation/screens/settings_screen.dart';
@@ -68,18 +67,6 @@ class FakeCurrentListNotifier extends StateNotifier<AsyncValue<ShoppingList?>>
   }) async {}
 }
 
-class FakeOfflineNotifier extends OfflineModeNotifier {
-  FakeOfflineNotifier(final bool initial) {
-    state = initial;
-  }
-  @override
-  Future<void> _loadState() async {}
-  @override
-  Future<void> setOfflineMode(final bool offline) async {
-    state = offline;
-  }
-}
-
 void main() {
   Widget createWidgetUnderTest(
     FakeCurrentListNotifier notifier, {
@@ -89,7 +76,6 @@ void main() {
       overrides: [
         currentListProvider.overrideWith((ref) => notifier),
         currentTabIndexProvider.overrideWith((ref) => initialTab),
-        isOfflineModeProvider.overrideWith((ref) => FakeOfflineNotifier(true)),
         heatmapDataProvider.overrideWith((ref) async => const []),
       ],
       child: Consumer(

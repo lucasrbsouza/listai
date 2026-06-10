@@ -121,18 +121,6 @@ class $ShoppingListsTableTable extends ShoppingListsTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
-  @override
-  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-    'sync_status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('synced'),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -145,7 +133,6 @@ class $ShoppingListsTableTable extends ShoppingListsTable
     completedAt,
     createdAt,
     updatedAt,
-    syncStatus,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -233,12 +220,6 @@ class $ShoppingListsTableTable extends ShoppingListsTable
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
-    if (data.containsKey('sync_status')) {
-      context.handle(
-        _syncStatusMeta,
-        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
-      );
-    }
     return context;
   }
 
@@ -288,10 +269,6 @@ class $ShoppingListsTableTable extends ShoppingListsTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
-      syncStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_status'],
-      )!,
     );
   }
 
@@ -313,7 +290,6 @@ class ShoppingListsTableData extends DataClass
   final DateTime? completedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String syncStatus;
   const ShoppingListsTableData({
     required this.id,
     this.userId,
@@ -325,7 +301,6 @@ class ShoppingListsTableData extends DataClass
     this.completedAt,
     required this.createdAt,
     required this.updatedAt,
-    required this.syncStatus,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -348,7 +323,6 @@ class ShoppingListsTableData extends DataClass
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['sync_status'] = Variable<String>(syncStatus);
     return map;
   }
 
@@ -372,7 +346,6 @@ class ShoppingListsTableData extends DataClass
           : Value(completedAt),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      syncStatus: Value(syncStatus),
     );
   }
 
@@ -392,7 +365,6 @@ class ShoppingListsTableData extends DataClass
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      syncStatus: serializer.fromJson<String>(json['syncStatus']),
     );
   }
   @override
@@ -409,7 +381,6 @@ class ShoppingListsTableData extends DataClass
       'completedAt': serializer.toJson<DateTime?>(completedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'syncStatus': serializer.toJson<String>(syncStatus),
     };
   }
 
@@ -424,7 +395,6 @@ class ShoppingListsTableData extends DataClass
     Value<DateTime?> completedAt = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? syncStatus,
   }) => ShoppingListsTableData(
     id: id ?? this.id,
     userId: userId.present ? userId.value : this.userId,
@@ -438,7 +408,6 @@ class ShoppingListsTableData extends DataClass
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    syncStatus: syncStatus ?? this.syncStatus,
   );
   ShoppingListsTableData copyWithCompanion(ShoppingListsTableCompanion data) {
     return ShoppingListsTableData(
@@ -462,9 +431,6 @@ class ShoppingListsTableData extends DataClass
           : this.completedAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
     );
   }
 
@@ -480,8 +446,7 @@ class ShoppingListsTableData extends DataClass
           ..write('isTemplate: $isTemplate, ')
           ..write('completedAt: $completedAt, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -498,7 +463,6 @@ class ShoppingListsTableData extends DataClass
     completedAt,
     createdAt,
     updatedAt,
-    syncStatus,
   );
   @override
   bool operator ==(Object other) =>
@@ -513,8 +477,7 @@ class ShoppingListsTableData extends DataClass
           other.isTemplate == this.isTemplate &&
           other.completedAt == this.completedAt &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.syncStatus == this.syncStatus);
+          other.updatedAt == this.updatedAt);
 }
 
 class ShoppingListsTableCompanion
@@ -529,7 +492,6 @@ class ShoppingListsTableCompanion
   final Value<DateTime?> completedAt;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<String> syncStatus;
   final Value<int> rowid;
   const ShoppingListsTableCompanion({
     this.id = const Value.absent(),
@@ -542,7 +504,6 @@ class ShoppingListsTableCompanion
     this.completedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-    this.syncStatus = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ShoppingListsTableCompanion.insert({
@@ -556,7 +517,6 @@ class ShoppingListsTableCompanion
     this.completedAt = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
-    this.syncStatus = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -573,7 +533,6 @@ class ShoppingListsTableCompanion
     Expression<DateTime>? completedAt,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
-    Expression<String>? syncStatus,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -587,7 +546,6 @@ class ShoppingListsTableCompanion
       if (completedAt != null) 'completed_at': completedAt,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (syncStatus != null) 'sync_status': syncStatus,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -603,7 +561,6 @@ class ShoppingListsTableCompanion
     Value<DateTime?>? completedAt,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<String>? syncStatus,
     Value<int>? rowid,
   }) {
     return ShoppingListsTableCompanion(
@@ -617,7 +574,6 @@ class ShoppingListsTableCompanion
       completedAt: completedAt ?? this.completedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      syncStatus: syncStatus ?? this.syncStatus,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -655,9 +611,6 @@ class ShoppingListsTableCompanion
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
-    if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(syncStatus.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -677,7 +630,6 @@ class ShoppingListsTableCompanion
           ..write('completedAt: $completedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('syncStatus: $syncStatus, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -760,9 +712,9 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
   late final GeneratedColumn<int> unitPriceCents = GeneratedColumn<int>(
     'unit_price_cents',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _isWholesaleMeta = const VerificationMeta(
     'isWholesale',
@@ -872,18 +824,6 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
-  @override
-  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-    'sync_status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('synced'),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -902,7 +842,6 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
     substituteItemId,
     position,
     createdAt,
-    syncStatus,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -976,8 +915,6 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
           _unitPriceCentsMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_unitPriceCentsMeta);
     }
     if (data.containsKey('is_wholesale')) {
       context.handle(
@@ -1052,12 +989,6 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
-    if (data.containsKey('sync_status')) {
-      context.handle(
-        _syncStatusMeta,
-        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
-      );
-    }
     return context;
   }
 
@@ -1094,7 +1025,7 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
       unitPriceCents: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}unit_price_cents'],
-      )!,
+      ),
       isWholesale: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_wholesale'],
@@ -1131,10 +1062,6 @@ class $ShoppingItemsTableTable extends ShoppingItemsTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
-      syncStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_status'],
-      )!,
     );
   }
 
@@ -1152,7 +1079,7 @@ class ShoppingItemsTableData extends DataClass
   final String productName;
   final String? brand;
   final double quantityValue;
-  final int unitPriceCents;
+  final int? unitPriceCents;
   final bool isWholesale;
   final bool isWeightBased;
   final int? pricePerKgCents;
@@ -1162,7 +1089,6 @@ class ShoppingItemsTableData extends DataClass
   final String? substituteItemId;
   final int position;
   final DateTime createdAt;
-  final String syncStatus;
   const ShoppingItemsTableData({
     required this.id,
     required this.listId,
@@ -1170,7 +1096,7 @@ class ShoppingItemsTableData extends DataClass
     required this.productName,
     this.brand,
     required this.quantityValue,
-    required this.unitPriceCents,
+    this.unitPriceCents,
     required this.isWholesale,
     required this.isWeightBased,
     this.pricePerKgCents,
@@ -1180,7 +1106,6 @@ class ShoppingItemsTableData extends DataClass
     this.substituteItemId,
     required this.position,
     required this.createdAt,
-    required this.syncStatus,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1193,7 +1118,9 @@ class ShoppingItemsTableData extends DataClass
       map['brand'] = Variable<String>(brand);
     }
     map['quantity_value'] = Variable<double>(quantityValue);
-    map['unit_price_cents'] = Variable<int>(unitPriceCents);
+    if (!nullToAbsent || unitPriceCents != null) {
+      map['unit_price_cents'] = Variable<int>(unitPriceCents);
+    }
     map['is_wholesale'] = Variable<bool>(isWholesale);
     map['is_weight_based'] = Variable<bool>(isWeightBased);
     if (!nullToAbsent || pricePerKgCents != null) {
@@ -1213,7 +1140,6 @@ class ShoppingItemsTableData extends DataClass
     }
     map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
-    map['sync_status'] = Variable<String>(syncStatus);
     return map;
   }
 
@@ -1227,7 +1153,9 @@ class ShoppingItemsTableData extends DataClass
           ? const Value.absent()
           : Value(brand),
       quantityValue: Value(quantityValue),
-      unitPriceCents: Value(unitPriceCents),
+      unitPriceCents: unitPriceCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(unitPriceCents),
       isWholesale: Value(isWholesale),
       isWeightBased: Value(isWeightBased),
       pricePerKgCents: pricePerKgCents == null && nullToAbsent
@@ -1247,7 +1175,6 @@ class ShoppingItemsTableData extends DataClass
           : Value(substituteItemId),
       position: Value(position),
       createdAt: Value(createdAt),
-      syncStatus: Value(syncStatus),
     );
   }
 
@@ -1263,7 +1190,7 @@ class ShoppingItemsTableData extends DataClass
       productName: serializer.fromJson<String>(json['productName']),
       brand: serializer.fromJson<String?>(json['brand']),
       quantityValue: serializer.fromJson<double>(json['quantityValue']),
-      unitPriceCents: serializer.fromJson<int>(json['unitPriceCents']),
+      unitPriceCents: serializer.fromJson<int?>(json['unitPriceCents']),
       isWholesale: serializer.fromJson<bool>(json['isWholesale']),
       isWeightBased: serializer.fromJson<bool>(json['isWeightBased']),
       pricePerKgCents: serializer.fromJson<int?>(json['pricePerKgCents']),
@@ -1273,7 +1200,6 @@ class ShoppingItemsTableData extends DataClass
       substituteItemId: serializer.fromJson<String?>(json['substituteItemId']),
       position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      syncStatus: serializer.fromJson<String>(json['syncStatus']),
     );
   }
   @override
@@ -1286,7 +1212,7 @@ class ShoppingItemsTableData extends DataClass
       'productName': serializer.toJson<String>(productName),
       'brand': serializer.toJson<String?>(brand),
       'quantityValue': serializer.toJson<double>(quantityValue),
-      'unitPriceCents': serializer.toJson<int>(unitPriceCents),
+      'unitPriceCents': serializer.toJson<int?>(unitPriceCents),
       'isWholesale': serializer.toJson<bool>(isWholesale),
       'isWeightBased': serializer.toJson<bool>(isWeightBased),
       'pricePerKgCents': serializer.toJson<int?>(pricePerKgCents),
@@ -1296,7 +1222,6 @@ class ShoppingItemsTableData extends DataClass
       'substituteItemId': serializer.toJson<String?>(substituteItemId),
       'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
-      'syncStatus': serializer.toJson<String>(syncStatus),
     };
   }
 
@@ -1307,7 +1232,7 @@ class ShoppingItemsTableData extends DataClass
     String? productName,
     Value<String?> brand = const Value.absent(),
     double? quantityValue,
-    int? unitPriceCents,
+    Value<int?> unitPriceCents = const Value.absent(),
     bool? isWholesale,
     bool? isWeightBased,
     Value<int?> pricePerKgCents = const Value.absent(),
@@ -1317,7 +1242,6 @@ class ShoppingItemsTableData extends DataClass
     Value<String?> substituteItemId = const Value.absent(),
     int? position,
     DateTime? createdAt,
-    String? syncStatus,
   }) => ShoppingItemsTableData(
     id: id ?? this.id,
     listId: listId ?? this.listId,
@@ -1325,7 +1249,9 @@ class ShoppingItemsTableData extends DataClass
     productName: productName ?? this.productName,
     brand: brand.present ? brand.value : this.brand,
     quantityValue: quantityValue ?? this.quantityValue,
-    unitPriceCents: unitPriceCents ?? this.unitPriceCents,
+    unitPriceCents: unitPriceCents.present
+        ? unitPriceCents.value
+        : this.unitPriceCents,
     isWholesale: isWholesale ?? this.isWholesale,
     isWeightBased: isWeightBased ?? this.isWeightBased,
     pricePerKgCents: pricePerKgCents.present
@@ -1341,7 +1267,6 @@ class ShoppingItemsTableData extends DataClass
         : this.substituteItemId,
     position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
-    syncStatus: syncStatus ?? this.syncStatus,
   );
   ShoppingItemsTableData copyWithCompanion(ShoppingItemsTableCompanion data) {
     return ShoppingItemsTableData(
@@ -1379,9 +1304,6 @@ class ShoppingItemsTableData extends DataClass
           : this.substituteItemId,
       position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
     );
   }
 
@@ -1403,8 +1325,7 @@ class ShoppingItemsTableData extends DataClass
           ..write('photoCapturedAt: $photoCapturedAt, ')
           ..write('substituteItemId: $substituteItemId, ')
           ..write('position: $position, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -1427,7 +1348,6 @@ class ShoppingItemsTableData extends DataClass
     substituteItemId,
     position,
     createdAt,
-    syncStatus,
   );
   @override
   bool operator ==(Object other) =>
@@ -1448,8 +1368,7 @@ class ShoppingItemsTableData extends DataClass
           other.photoCapturedAt == this.photoCapturedAt &&
           other.substituteItemId == this.substituteItemId &&
           other.position == this.position &&
-          other.createdAt == this.createdAt &&
-          other.syncStatus == this.syncStatus);
+          other.createdAt == this.createdAt);
 }
 
 class ShoppingItemsTableCompanion
@@ -1460,7 +1379,7 @@ class ShoppingItemsTableCompanion
   final Value<String> productName;
   final Value<String?> brand;
   final Value<double> quantityValue;
-  final Value<int> unitPriceCents;
+  final Value<int?> unitPriceCents;
   final Value<bool> isWholesale;
   final Value<bool> isWeightBased;
   final Value<int?> pricePerKgCents;
@@ -1470,7 +1389,6 @@ class ShoppingItemsTableCompanion
   final Value<String?> substituteItemId;
   final Value<int> position;
   final Value<DateTime> createdAt;
-  final Value<String> syncStatus;
   final Value<int> rowid;
   const ShoppingItemsTableCompanion({
     this.id = const Value.absent(),
@@ -1489,7 +1407,6 @@ class ShoppingItemsTableCompanion
     this.substituteItemId = const Value.absent(),
     this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
-    this.syncStatus = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ShoppingItemsTableCompanion.insert({
@@ -1499,7 +1416,7 @@ class ShoppingItemsTableCompanion
     required String productName,
     this.brand = const Value.absent(),
     required double quantityValue,
-    required int unitPriceCents,
+    this.unitPriceCents = const Value.absent(),
     this.isWholesale = const Value.absent(),
     this.isWeightBased = const Value.absent(),
     this.pricePerKgCents = const Value.absent(),
@@ -1509,14 +1426,12 @@ class ShoppingItemsTableCompanion
     this.substituteItemId = const Value.absent(),
     required int position,
     required DateTime createdAt,
-    this.syncStatus = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        listId = Value(listId),
        productType = Value(productType),
        productName = Value(productName),
        quantityValue = Value(quantityValue),
-       unitPriceCents = Value(unitPriceCents),
        position = Value(position),
        createdAt = Value(createdAt);
   static Insertable<ShoppingItemsTableData> custom({
@@ -1536,7 +1451,6 @@ class ShoppingItemsTableCompanion
     Expression<String>? substituteItemId,
     Expression<int>? position,
     Expression<DateTime>? createdAt,
-    Expression<String>? syncStatus,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1556,7 +1470,6 @@ class ShoppingItemsTableCompanion
       if (substituteItemId != null) 'substitute_item_id': substituteItemId,
       if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
-      if (syncStatus != null) 'sync_status': syncStatus,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1568,7 +1481,7 @@ class ShoppingItemsTableCompanion
     Value<String>? productName,
     Value<String?>? brand,
     Value<double>? quantityValue,
-    Value<int>? unitPriceCents,
+    Value<int?>? unitPriceCents,
     Value<bool>? isWholesale,
     Value<bool>? isWeightBased,
     Value<int?>? pricePerKgCents,
@@ -1578,7 +1491,6 @@ class ShoppingItemsTableCompanion
     Value<String?>? substituteItemId,
     Value<int>? position,
     Value<DateTime>? createdAt,
-    Value<String>? syncStatus,
     Value<int>? rowid,
   }) {
     return ShoppingItemsTableCompanion(
@@ -1598,7 +1510,6 @@ class ShoppingItemsTableCompanion
       substituteItemId: substituteItemId ?? this.substituteItemId,
       position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
-      syncStatus: syncStatus ?? this.syncStatus,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1654,9 +1565,6 @@ class ShoppingItemsTableCompanion
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
-    if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(syncStatus.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1682,7 +1590,6 @@ class ShoppingItemsTableCompanion
           ..write('substituteItemId: $substituteItemId, ')
           ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
-          ..write('syncStatus: $syncStatus, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2772,7 +2679,6 @@ typedef $$ShoppingListsTableTableCreateCompanionBuilder =
       Value<DateTime?> completedAt,
       required DateTime createdAt,
       required DateTime updatedAt,
-      Value<String> syncStatus,
       Value<int> rowid,
     });
 typedef $$ShoppingListsTableTableUpdateCompanionBuilder =
@@ -2787,7 +2693,6 @@ typedef $$ShoppingListsTableTableUpdateCompanionBuilder =
       Value<DateTime?> completedAt,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<String> syncStatus,
       Value<int> rowid,
     });
 
@@ -2891,11 +2796,6 @@ class $$ShoppingListsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
   Expression<bool> shoppingItemsTableRefs(
     Expression<bool> Function($$ShoppingItemsTableTableFilterComposer f) f,
   ) {
@@ -2980,11 +2880,6 @@ class $$ShoppingListsTableTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$ShoppingListsTableTableAnnotationComposer
@@ -3035,11 +2930,6 @@ class $$ShoppingListsTableTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
 
   Expression<T> shoppingItemsTableRefs<T extends Object>(
     Expression<T> Function($$ShoppingItemsTableTableAnnotationComposer a) f,
@@ -3111,7 +3001,6 @@ class $$ShoppingListsTableTableTableManager
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<String> syncStatus = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ShoppingListsTableCompanion(
                 id: id,
@@ -3124,7 +3013,6 @@ class $$ShoppingListsTableTableTableManager
                 completedAt: completedAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                syncStatus: syncStatus,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3139,7 +3027,6 @@ class $$ShoppingListsTableTableTableManager
                 Value<DateTime?> completedAt = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
-                Value<String> syncStatus = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ShoppingListsTableCompanion.insert(
                 id: id,
@@ -3152,7 +3039,6 @@ class $$ShoppingListsTableTableTableManager
                 completedAt: completedAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                syncStatus: syncStatus,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -3221,7 +3107,7 @@ typedef $$ShoppingItemsTableTableCreateCompanionBuilder =
       required String productName,
       Value<String?> brand,
       required double quantityValue,
-      required int unitPriceCents,
+      Value<int?> unitPriceCents,
       Value<bool> isWholesale,
       Value<bool> isWeightBased,
       Value<int?> pricePerKgCents,
@@ -3231,7 +3117,6 @@ typedef $$ShoppingItemsTableTableCreateCompanionBuilder =
       Value<String?> substituteItemId,
       required int position,
       required DateTime createdAt,
-      Value<String> syncStatus,
       Value<int> rowid,
     });
 typedef $$ShoppingItemsTableTableUpdateCompanionBuilder =
@@ -3242,7 +3127,7 @@ typedef $$ShoppingItemsTableTableUpdateCompanionBuilder =
       Value<String> productName,
       Value<String?> brand,
       Value<double> quantityValue,
-      Value<int> unitPriceCents,
+      Value<int?> unitPriceCents,
       Value<bool> isWholesale,
       Value<bool> isWeightBased,
       Value<int?> pricePerKgCents,
@@ -3252,7 +3137,6 @@ typedef $$ShoppingItemsTableTableUpdateCompanionBuilder =
       Value<String?> substituteItemId,
       Value<int> position,
       Value<DateTime> createdAt,
-      Value<String> syncStatus,
       Value<int> rowid,
     });
 
@@ -3376,11 +3260,6 @@ class $$ShoppingItemsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
   $$ShoppingListsTableTableFilterComposer get listId {
     final $$ShoppingListsTableTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -3489,11 +3368,6 @@ class $$ShoppingItemsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   $$ShoppingListsTableTableOrderingComposer get listId {
     final $$ShoppingListsTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -3590,11 +3464,6 @@ class $$ShoppingItemsTableTableAnnotationComposer
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
-  GeneratedColumn<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
-
   $$ShoppingListsTableTableAnnotationComposer get listId {
     final $$ShoppingListsTableTableAnnotationComposer composer =
         $composerBuilder(
@@ -3659,7 +3528,7 @@ class $$ShoppingItemsTableTableTableManager
                 Value<String> productName = const Value.absent(),
                 Value<String?> brand = const Value.absent(),
                 Value<double> quantityValue = const Value.absent(),
-                Value<int> unitPriceCents = const Value.absent(),
+                Value<int?> unitPriceCents = const Value.absent(),
                 Value<bool> isWholesale = const Value.absent(),
                 Value<bool> isWeightBased = const Value.absent(),
                 Value<int?> pricePerKgCents = const Value.absent(),
@@ -3669,7 +3538,6 @@ class $$ShoppingItemsTableTableTableManager
                 Value<String?> substituteItemId = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
-                Value<String> syncStatus = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ShoppingItemsTableCompanion(
                 id: id,
@@ -3688,7 +3556,6 @@ class $$ShoppingItemsTableTableTableManager
                 substituteItemId: substituteItemId,
                 position: position,
                 createdAt: createdAt,
-                syncStatus: syncStatus,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3699,7 +3566,7 @@ class $$ShoppingItemsTableTableTableManager
                 required String productName,
                 Value<String?> brand = const Value.absent(),
                 required double quantityValue,
-                required int unitPriceCents,
+                Value<int?> unitPriceCents = const Value.absent(),
                 Value<bool> isWholesale = const Value.absent(),
                 Value<bool> isWeightBased = const Value.absent(),
                 Value<int?> pricePerKgCents = const Value.absent(),
@@ -3709,7 +3576,6 @@ class $$ShoppingItemsTableTableTableManager
                 Value<String?> substituteItemId = const Value.absent(),
                 required int position,
                 required DateTime createdAt,
-                Value<String> syncStatus = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ShoppingItemsTableCompanion.insert(
                 id: id,
@@ -3728,7 +3594,6 @@ class $$ShoppingItemsTableTableTableManager
                 substituteItemId: substituteItemId,
                 position: position,
                 createdAt: createdAt,
-                syncStatus: syncStatus,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

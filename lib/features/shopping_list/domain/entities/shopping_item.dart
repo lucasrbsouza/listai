@@ -11,7 +11,7 @@ class ShoppingItem {
     required final String productName,
     final String? brand,
     required final Quantity quantity,
-    required final Money unitPrice,
+    final Money? unitPrice,
     final bool isWholesale = false,
     final bool isWeightBased = false,
     final Money? pricePerKg,
@@ -42,9 +42,6 @@ class ShoppingItem {
     }
     if (isWeightBased && isWholesale) {
       throw ArgumentError('isWeightBased and isWholesale cannot both be true');
-    }
-    if (isWeightBased && pricePerKg == null) {
-      throw ArgumentError('pricePerKg required when isWeightBased=true');
     }
     if (isWeightBased && weightKg == null) {
       throw ArgumentError('weightKg required when isWeightBased=true');
@@ -91,7 +88,7 @@ class ShoppingItem {
   final String productName;
   final String? brand;
   final Quantity quantity;
-  final Money unitPrice;
+  final Money? unitPrice;
   final bool isWholesale;
   final bool isWeightBased;
   final Money? pricePerKg;
@@ -102,9 +99,19 @@ class ShoppingItem {
   final int position;
   final DateTime createdAt;
 
+  /// Whether the item has a known price (unit price or price per kg).
+  bool get hasPrice => isWeightBased ? pricePerKg != null : unitPrice != null;
+
+  /// Total for the item; items without a price contribute zero.
   Money get totalPrice {
-    if (isWeightBased) return pricePerKg! * weightKg!.value;
-    return unitPrice * quantity.value;
+    if (isWeightBased) {
+      final perKg = pricePerKg;
+      if (perKg == null) return const Money.zero();
+      return perKg * weightKg!.value;
+    }
+    final price = unitPrice;
+    if (price == null) return const Money.zero();
+    return price * quantity.value;
   }
 
   ShoppingItem copyWith({
@@ -115,6 +122,7 @@ class ShoppingItem {
     final bool clearBrand = false,
     final Quantity? quantity,
     final Money? unitPrice,
+    final bool clearUnitPrice = false,
     final bool? isWholesale,
     final bool? isWeightBased,
     final Money? pricePerKg,
@@ -136,7 +144,7 @@ class ShoppingItem {
       productName: productName ?? this.productName,
       brand: clearBrand ? null : (brand ?? this.brand),
       quantity: quantity ?? this.quantity,
-      unitPrice: unitPrice ?? this.unitPrice,
+      unitPrice: clearUnitPrice ? null : (unitPrice ?? this.unitPrice),
       isWholesale: isWholesale ?? this.isWholesale,
       isWeightBased: isWeightBased ?? this.isWeightBased,
       pricePerKg: clearPricePerKg ? null : (pricePerKg ?? this.pricePerKg),

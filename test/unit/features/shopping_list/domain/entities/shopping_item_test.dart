@@ -48,6 +48,19 @@ void main() {
       );
       expect(item.totalPrice.cents, 1500);
     });
+
+    test('item without unitPrice is allowed (unknown price)', () {
+      final item = ShoppingItem(
+        id: 'item-no-price',
+        productType: 'Mercearia',
+        productName: 'Arroz',
+        quantity: Quantity(2),
+        createdAt: DateTime(2024),
+      );
+      expect(item.unitPrice, isNull);
+      expect(item.hasPrice, isFalse);
+      expect(item.totalPrice.cents, 0);
+    });
   });
 
   group('ShoppingItem construction — wholesale', () {
@@ -85,11 +98,11 @@ void main() {
       expect(item.totalPrice.cents, 1000);
     });
 
-    test('weight-based without pricePerKg throws', () {
-      expect(
-        () => _makeItem(isWeightBased: true, weightKg: Quantity(1.0)),
-        throwsArgumentError,
-      );
+    test('weight-based without pricePerKg is allowed (unknown price)', () {
+      final item = _makeItem(isWeightBased: true, weightKg: Quantity(1.0));
+      expect(item.pricePerKg, isNull);
+      expect(item.hasPrice, isFalse);
+      expect(item.totalPrice.cents, 0);
     });
 
     test('weight-based without weightKg throws', () {

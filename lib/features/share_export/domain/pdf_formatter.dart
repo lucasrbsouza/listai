@@ -65,10 +65,15 @@ class PdfFormatter implements ExportFormatter {
                     ? '${item.weightKg!.value} kg'
                     : '${item.quantity.value}';
                 final pUnitStr = item.isWeightBased
-                    ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg'
-                    : 'R\$ ${item.unitPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
-                final totalStr =
-                    'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}';
+                    ? (item.pricePerKg != null
+                          ? 'R\$ ${item.pricePerKg!.reais.toStringAsFixed(2).replaceAll('.', ',')}/kg'
+                          : 'sem preço')
+                    : (item.unitPrice != null
+                          ? 'R\$ ${item.unitPrice!.reais.toStringAsFixed(2).replaceAll('.', ',')}'
+                          : 'sem preço');
+                final totalStr = item.hasPrice
+                    ? 'R\$ ${item.totalPrice.reais.toStringAsFixed(2).replaceAll('.', ',')}'
+                    : 'sem preço';
 
                 return [item.productType, nameStr, qtyStr, pUnitStr, totalStr];
               }).toList(),

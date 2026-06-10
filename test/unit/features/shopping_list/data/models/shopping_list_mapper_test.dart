@@ -30,7 +30,6 @@ void main() {
     completedAt: completedAt,
     createdAt: baseDate,
     updatedAt: baseDate,
-    syncStatus: 'synced',
   );
 
   ShoppingItemsTableData makeItemRow({
@@ -54,7 +53,6 @@ void main() {
     substituteItemId: null,
     position: position,
     createdAt: baseDate,
-    syncStatus: 'synced',
   );
 
   group('ShoppingListMapper.toEntity', () {
@@ -187,7 +185,6 @@ void main() {
         completedAt: companion.completedAt.value,
         createdAt: companion.createdAt.value,
         updatedAt: companion.updatedAt.value,
-        syncStatus: 'synced',
       );
       final restored = ShoppingListMapper.toEntity(row, []);
 
@@ -239,7 +236,6 @@ void main() {
         substituteItemId: itemCompanion.substituteItemId.value,
         position: itemCompanion.position.value,
         createdAt: itemCompanion.createdAt.value,
-        syncStatus: 'synced',
       );
 
       final listCompanion = ShoppingListMapper.toCompanion(original);
@@ -254,7 +250,6 @@ void main() {
         completedAt: listCompanion.completedAt.value,
         createdAt: listCompanion.createdAt.value,
         updatedAt: listCompanion.updatedAt.value,
-        syncStatus: 'synced',
       );
 
       final restored = ShoppingListMapper.toEntity(listRow, [itemRow]);

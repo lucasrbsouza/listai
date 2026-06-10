@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/entities/shopping_list.dart';
+import '../providers/current_list_provider.dart';
+import '../providers/current_tab_provider.dart';
 import '../providers/saved_lists_provider.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -44,45 +46,122 @@ class HistoryScreen extends ConsumerWidget {
       );
     }
 
-    // Sort by date descending
+    // Sort by purchase date descending
     final sortedHistory = List<ShoppingList>.from(history)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      ..sort(
+        (a, b) => (b.completedAt ?? b.createdAt).compareTo(
+          a.completedAt ?? a.createdAt,
+        ),
+      );
 
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(savedListsProvider.future),
       child: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: sortedHistory.length,
-        itemBuilder: (context, index) {
-          final list = sortedHistory[index];
-          final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(list.createdAt);
-
-          return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-            margin: const EdgeInsets.only(bottom: 16.0),
-            child: ListTile(
-              onTap: () => context.push('/saved/${list.id}', extra: list),
-              contentPadding: const EdgeInsets.all(16.0),
-              title: Text(
-                list.name.isNotEmpty ? list.name : dateStr,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  Text('Data: $dateStr'),
-                  Text('Total: ${list.totalPrice.format()}'),
-                  if (list.marketName != null && list.marketName!.isNotEmpty)
-                    Text('Mercado: ${list.marketName}'),
-                ],
-              ),
-            ),
-          );
-        },
+        itemBuilder: (context, index) =>
+            _buildHistoryCard(context, ref, sortedHistory[index]),
       ),
     );
+  }
+
+  Widget _buildHistoryCard(
+    BuildContext context,
+    WidgetRef ref,
+    ShoppingList list,
+  ) {
+    final purchaseDate = list.completedAt ?? list.createdAt;
+    final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(purchaseDate);
+    final itemCount = list.items.length;
+    final itemCountStr = itemCount == 1 ? '1 item' : '$itemCount itens';
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () => context.push('/saved/${list.id}', extra: list),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      list.name.isNotEmpty ? list.name : dateStr,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.check_circle, color: Colors.green[600], size: 20),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildInfoRow(Icons.calendar_today, dateStr),
+              const SizedBox(height: 4),
+              _buildInfoRow(Icons.shopping_basket_outlined, itemCountStr),
+              if (list.marketName != null && list.marketName!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                _buildInfoRow(Icons.storefront_outlined, list.marketName!),
+              ],
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Total:', style: TextStyle(fontSize: 16)),
+                  Text(
+                    list.totalPrice.format(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => _reuseList(context, ref, list),
+                  icon: const Icon(Icons.replay),
+                  label: const Text('Reutilizar lista'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey[600]),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: TextStyle(color: Colors.grey[800])),
+        ),
+      ],
+    );
+  }
+
+  void _reuseList(BuildContext context, WidgetRef ref, ShoppingList list) {
+    ref
+        .read(currentListProvider.notifier)
+        .duplicateAndUseList(list, newName: list.name);
+    ref.read(currentTabIndexProvider.notifier).state = 2;
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Lista "${list.name}" pronta para uma nova compra!'),
+      ),
+    );
+    context.go('/');
   }
 }

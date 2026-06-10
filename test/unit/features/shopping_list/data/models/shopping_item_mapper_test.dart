@@ -41,7 +41,6 @@ void main() {
     substituteItemId: null,
     position: position,
     createdAt: baseDate,
-    syncStatus: 'synced',
   );
 
   group('ShoppingItemMapper.toEntity', () {
@@ -79,7 +78,6 @@ void main() {
         substituteItemId: null,
         position: 0,
         createdAt: baseDate,
-        syncStatus: 'synced',
       );
 
       final entity = ShoppingItemMapper.toEntity(row);
@@ -109,7 +107,6 @@ void main() {
         substituteItemId: null,
         position: 0,
         createdAt: baseDate,
-        syncStatus: 'synced',
       );
 
       final entity = ShoppingItemMapper.toEntity(row);
@@ -136,7 +133,6 @@ void main() {
         substituteItemId: null,
         position: 0,
         createdAt: baseDate,
-        syncStatus: 'synced',
       );
 
       final entity = ShoppingItemMapper.toEntity(row);
@@ -163,7 +159,6 @@ void main() {
         substituteItemId: 'sub-1',
         position: 0,
         createdAt: baseDate,
-        syncStatus: 'synced',
       );
 
       final entity = ShoppingItemMapper.toEntity(row);
@@ -260,7 +255,6 @@ void main() {
         substituteItemId: companion.substituteItemId.value,
         position: companion.position.value,
         createdAt: companion.createdAt.value,
-        syncStatus: 'synced',
       );
       final restored = ShoppingItemMapper.toEntity(row);
 
@@ -310,7 +304,6 @@ void main() {
         substituteItemId: companion.substituteItemId.value,
         position: companion.position.value,
         createdAt: companion.createdAt.value,
-        syncStatus: 'synced',
       );
       final restored = ShoppingItemMapper.toEntity(row);
 

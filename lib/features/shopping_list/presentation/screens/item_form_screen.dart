@@ -78,11 +78,14 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
 
       if (_isWeightBased) {
         _weightController.text = item.weightKg?.value.toString() ?? '';
-        _pricePerKgController.text = (item.pricePerKg?.cents ?? 0 / 100)
-            .toStringAsFixed(2);
+        _pricePerKgController.text = item.pricePerKg != null
+            ? (item.pricePerKg!.cents / 100).toStringAsFixed(2)
+            : '';
       } else {
         _quantityController.text = item.quantity.value.toString();
-        _priceController.text = (item.unitPrice.cents / 100).toStringAsFixed(2);
+        _priceController.text = item.unitPrice != null
+            ? (item.unitPrice!.cents / 100).toStringAsFixed(2)
+            : '';
       }
     }
   }
@@ -114,18 +117,14 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
       final weight = double.tryParse(
         _weightController.text.replaceAll(',', '.'),
       );
-      final priceKg = double.tryParse(
-        _pricePerKgController.text.replaceAll(',', '.'),
-      );
       if (weight == null || weight <= 0) return false;
-      if (priceKg == null || priceKg <= 0) return false;
+      if (!_isOptionalPriceValid(_pricePerKgController.text)) return false;
     } else {
       final qty = double.tryParse(
         _quantityController.text.replaceAll(',', '.'),
       );
-      final price = double.tryParse(_priceController.text.replaceAll(',', '.'));
       if (qty == null || qty <= 0) return false;
-      if (price == null || price <= 0) return false;
+      if (!_isOptionalPriceValid(_priceController.text)) return false;
     }
 
     if (_hasSubstitute) {
@@ -133,15 +132,27 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
       final substituteQty = double.tryParse(
         _substituteQuantityController.text.replaceAll(',', '.'),
       );
-      final substitutePrice = double.tryParse(
-        _substitutePriceController.text.replaceAll(',', '.'),
-      );
       if (substituteName.isEmpty) return false;
       if (substituteQty == null || substituteQty <= 0) return false;
-      if (substitutePrice == null || substitutePrice <= 0) return false;
+      if (!_isOptionalPriceValid(_substitutePriceController.text)) {
+        return false;
+      }
     }
 
     return true;
+  }
+
+  /// Price fields are optional: empty means "price unknown", but if the user
+  /// typed something it must be a positive number.
+  bool _isOptionalPriceValid(final String text) {
+    if (text.trim().isEmpty) return true;
+    final value = double.tryParse(text.replaceAll(',', '.'));
+    return value != null && value > 0;
+  }
+
+  Money? _parseOptionalPrice(final String text) {
+    if (text.trim().isEmpty) return null;
+    return Money.fromReais(double.parse(text.replaceAll(',', '.')));
   }
 
   void _onFieldChanged(String _) {
@@ -194,7 +205,7 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
     final name = _nameController.text.trim();
 
     Quantity quantity;
-    Money unitPrice;
+    Money? unitPrice;
     Quantity? weightKg;
     Money? pricePerKg;
 
@@ -202,22 +213,18 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
       final weightVal = double.parse(
         _weightController.text.replaceAll(',', '.'),
       );
-      final priceKgVal = double.parse(
-        _pricePerKgController.text.replaceAll(',', '.'),
-      );
       weightKg = Quantity(weightVal);
-      pricePerKg = Money.fromReais(priceKgVal);
+      pricePerKg = _parseOptionalPrice(_pricePerKgController.text);
 
       // Fallback values for unitPrice and quantity
       quantity = Quantity(weightVal);
-      unitPrice = Money.fromReais(priceKgVal);
+      unitPrice = pricePerKg;
     } else {
       final qtyVal = double.parse(
         _quantityController.text.replaceAll(',', '.'),
       );
-      final priceVal = double.parse(_priceController.text.replaceAll(',', '.'));
       quantity = Quantity(qtyVal);
-      unitPrice = Money.fromReais(priceVal);
+      unitPrice = _parseOptionalPrice(_priceController.text);
     }
 
     final substituteItem = _hasSubstitute
@@ -230,11 +237,7 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
                 _substituteQuantityController.text.replaceAll(',', '.'),
               ),
             ),
-            unitPrice: Money.fromReais(
-              double.parse(
-                _substitutePriceController.text.replaceAll(',', '.'),
-              ),
-            ),
+            unitPrice: _parseOptionalPrice(_substitutePriceController.text),
             createdAt: DateTime.now(),
           )
         : null;
@@ -406,6 +409,7 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
                                 controller: _pricePerKgController,
                                 decoration: const InputDecoration(
                                   labelText: 'Preço por KG (R\$)',
+                                  helperText: 'Opcional',
                                 ),
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
@@ -444,6 +448,7 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
                                 controller: _priceController,
                                 decoration: const InputDecoration(
                                   labelText: 'Preço Unitário (R\$)',
+                                  helperText: 'Opcional',
                                 ),
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
@@ -586,6 +591,7 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
                                 controller: _substitutePriceController,
                                 decoration: const InputDecoration(
                                   labelText: 'Preço do substituto (R\$)',
+                                  helperText: 'Opcional',
                                 ),
                                 keyboardType:
                                     const TextInputType.numberWithOptions(

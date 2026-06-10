@@ -32,9 +32,7 @@ class LocalShoppingListRepository implements ShoppingListRepository {
   @override
   Future<void> saveCurrentList(final ShoppingList list) async {
     await _db.transaction(() async {
-      final companion = ShoppingListMapper.toCompanion(
-        list,
-      ).copyWith(syncStatus: const Value('pending_upload'));
+      final companion = ShoppingListMapper.toCompanion(list);
       await _db.into(_db.shoppingListsTable).insertOnConflictUpdate(companion);
 
       await (_db.delete(
@@ -117,7 +115,7 @@ class LocalShoppingListRepository implements ShoppingListRepository {
                 productType: item.productType,
                 productName: item.productName,
                 quantityValue: item.quantity.value,
-                unitPriceCents: item.unitPrice.cents,
+                unitPriceCents: item.unitPrice?.cents ?? 0,
                 totalPriceCents: item.totalPrice.cents,
               ),
             );
@@ -130,7 +128,6 @@ class LocalShoppingListRepository implements ShoppingListRepository {
           isCompleted: const Value(true),
           completedAt: Value(DateTime.now()),
           updatedAt: Value(DateTime.now()),
-          syncStatus: const Value('pending_upload'),
         ),
       );
     });
@@ -149,19 +146,6 @@ class LocalShoppingListRepository implements ShoppingListRepository {
           if (rows.isEmpty) return null;
           return _loadListWithItems(rows.first);
         });
-  }
-
-  Future<List<ShoppingList>> getPendingUploads() async {
-    final rows = await (_db.select(
-      _db.shoppingListsTable,
-    )..where((t) => t.syncStatus.equals('pending_upload'))).get();
-
-    return Future.wait(rows.map(_loadListWithItems));
-  }
-
-  Future<void> updateSyncStatus(final String id, final String status) async {
-    await (_db.update(_db.shoppingListsTable)..where((t) => t.id.equals(id)))
-        .write(ShoppingListsTableCompanion(syncStatus: Value(status)));
   }
 
   Future<ShoppingList> _loadListWithItems(
