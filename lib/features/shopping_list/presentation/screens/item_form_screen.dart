@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import 'package:listai/core/utils/quantity.dart';
 import 'package:listai/features/photo_capture/data/photo_repository.dart';
 import 'package:listai/features/shopping_list/domain/entities/shopping_item.dart';
 import 'package:listai/features/shopping_list/presentation/providers/current_list_provider.dart';
+import 'package:listai/shared/widgets/local_photo_image.dart';
 
 class ItemFormScreen extends ConsumerStatefulWidget {
   final ShoppingItem? itemToEdit;
@@ -479,43 +479,36 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      OutlinedButton.icon(
-                        onPressed: _capturePhoto,
-                        icon: const Icon(Icons.camera_alt),
-                        label: Text(
-                          _photoPath == null
-                              ? 'Tirar foto da etiqueta'
-                              : 'Tirar nova foto',
-                        ),
-                      ),
-                      if (_photoPath != null) ...[
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
-                            File(_photoPath!),
-                            height: 160,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 160,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHighest,
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.image_not_supported),
-                              );
-                            },
+                      // Photo capture needs the local filesystem — native only.
+                      if (!kIsWeb) ...[
+                        OutlinedButton.icon(
+                          onPressed: _capturePhoto,
+                          icon: const Icon(Icons.camera_alt),
+                          label: Text(
+                            _photoPath == null
+                                ? 'Tirar foto da etiqueta'
+                                : 'Tirar nova foto',
                           ),
                         ),
-                        TextButton.icon(
-                          onPressed: _removePhoto,
-                          icon: const Icon(Icons.delete_outline),
-                          label: const Text('Remover foto'),
-                        ),
+                        if (_photoPath != null) ...[
+                          const SizedBox(height: 12),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: LocalPhotoImage(
+                              path: _photoPath!,
+                              height: 160,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: _removePhoto,
+                            icon: const Icon(Icons.delete_outline),
+                            label: const Text('Remover foto'),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
                       ],
-                      const SizedBox(height: 16),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Adicionar substituto'),

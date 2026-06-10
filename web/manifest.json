@@ -1,11 +1,11 @@
 {
-    "name": "listai",
-    "short_name": "listai",
+    "name": "Listaí — Lista de Compras",
+    "short_name": "Listaí",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#ffffff",
+    "theme_color": "#4CAF50",
+    "description": "Gerencie suas compras de supermercado: planejamento, execução e análise de gastos.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

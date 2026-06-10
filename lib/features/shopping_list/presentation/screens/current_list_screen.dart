@@ -1,4 +1,5 @@
 import 'dart:async' show unawaited;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,8 +11,8 @@ import 'package:listai/core/utils/money.dart';
 import 'package:listai/features/budget_goal/presentation/providers/budget_provider.dart';
 import 'package:listai/features/shopping_list/domain/usecases/check_budget_exceeded.dart';
 import '../../domain/entities/shopping_list.dart';
-import '../../../share_export/domain/export_service.dart';
-import '../../../share_export/presentation/providers/export_provider.dart';
+import '../../../share_export/domain/export_format.dart';
+import '../../../share_export/presentation/providers/export_launcher.dart';
 import 'package:listai/features/analytics/presentation/providers/analytics_provider.dart';
 import 'package:listai/features/analytics/presentation/widgets/budget_heatmap.dart';
 import 'package:listai/features/analytics/presentation/screens/analytics_screen.dart';
@@ -226,16 +227,18 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
                           ],
                         ),
                       ),
-                      const PopupMenuItem<String>(
-                        value: 'export',
-                        child: Row(
-                          children: [
-                            Icon(Icons.share),
-                            SizedBox(width: 8),
-                            Expanded(child: Text('Exportar lista')),
-                          ],
+                      // Export writes temp files via dart:io — not on web.
+                      if (!kIsWeb)
+                        const PopupMenuItem<String>(
+                          value: 'export',
+                          child: Row(
+                            children: [
+                              Icon(Icons.share),
+                              SizedBox(width: 8),
+                              Expanded(child: Text('Exportar lista')),
+                            ],
+                          ),
                         ),
-                      ),
                       const PopupMenuItem<String>(
                         value: 'clear',
                         child: Row(
@@ -1327,8 +1330,7 @@ class _CurrentListScreenState extends ConsumerState<CurrentListScreen> {
     );
 
     try {
-      final exportService = ref.read(exportServiceProvider);
-      await exportService.exportAndShare(list, format);
+      await exportAndShareList(ref, list, format);
 
       // Close loading dialog
       if (context.mounted) {

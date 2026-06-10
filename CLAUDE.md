@@ -12,7 +12,7 @@ Progress tracked in `TODO.md` (phases 0–9). Done: **Fase 0–6** — domain, D
 
 **Supabase/auth/sync were removed (June 2026)**: the app is now 100% local (SQLite via Drift). No login, no cloud sync, no network calls. Schema v2 dropped the `sync_status` columns.
 
-Currently in **beta testing**: signed Android APKs shipped to testers via tagged GitHub Releases (see Build & Release). iOS not yet built (needs macOS/Xcode).
+Currently in **beta testing**: signed Android APKs shipped to testers via tagged GitHub Releases (see Build & Release). iOS users are served by the **PWA** (Flutter web on GitHub Pages: https://lucasrbsouza.github.io/listai/ — "Add to Home Screen" in Safari); native iOS build not planned while distribution must stay free.
 
 ## Stack
 
@@ -96,6 +96,8 @@ Feature dirs in use: `shopping_list` (core), `budget_goal`, `analytics`, `photo_
 
 100% local: Drift (SQLite) is the single source of truth. `LocalShoppingListRepository` is the only `ShoppingListRepository` implementation. Schema migrations live in `AppDatabase.migration` (`onUpgrade`); current `schemaVersion` is 2. No network layer.
 
+**Web (PWA)**: Drift runs on web via `web/sqlite3.wasm` + `web/drift_worker.js` (versions must match the `sqlite3` and `drift` packages in `pubspec.lock` — re-download from the simolus3 GitHub releases when upgrading). Features that need `dart:io` (photo capture, export) are excluded from the web build via conditional exports (`foo_io.dart` / `foo_web.dart` behind `if (dart.library.js_interop)`) and hidden in the UI with `kIsWeb`. Never import `dart:io` directly from a screen — use the shims (`lib/shared/widgets/local_photo_image.dart`, `export_launcher.dart`, `photo_repository.dart`).
+
 ## AI Layer
 
 ```dart
@@ -141,6 +143,7 @@ Two workflows in `.github/workflows/`:
 
 - **`ci.yml`** — on push/PR to `main`: `dart format --set-exit-if-changed` + `flutter analyze --no-fatal-infos --no-fatal-warnings` + `flutter test`.
 - **`release.yml`** — on push of a tag `v*`: tests → build signed APK → publish a GitHub Release with `listai-<tag>.apk` attached.
+- **`deploy-web.yml`** — on push to `main`: tests → `flutter build web --base-href /listai/` → deploy to GitHub Pages (PWA for iOS users).
 
 To cut a release: bump `version:` in `pubspec.yaml`, commit, then `git tag vX.Y.Z -m "..." && git push origin vX.Y.Z`. The pipeline builds and publishes automatically.
 

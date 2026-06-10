@@ -1,12 +1,13 @@
 import 'dart:io';
 import '../../shopping_list/domain/entities/shopping_list.dart';
+import 'export_format.dart';
+
+export 'export_format.dart';
 
 abstract class ExportFormatter {
   ExportFormat get format;
   Future<File> export(ShoppingList list);
 }
-
-enum ExportFormat { pdf, txt, docx, pptx }
 
 class ExportService {
   final List<ExportFormatter> formatters;

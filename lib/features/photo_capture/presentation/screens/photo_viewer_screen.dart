@@ -1,7 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'package:listai/shared/widgets/local_photo_image.dart';
 
 class PhotoViewerArgs {
   const PhotoViewerArgs({required this.photoPath, this.capturedAt});
@@ -33,17 +33,7 @@ class PhotoViewerScreen extends StatelessWidget {
         children: [
           InteractiveViewer(
             child: Center(
-              child: Image.file(
-                File(photoPath),
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Icons.broken_image_outlined,
-                    color: Colors.white70,
-                    size: 72,
-                  );
-                },
-              ),
+              child: LocalPhotoImage(path: photoPath, fit: BoxFit.contain),
             ),
           ),
           Positioned(
