@@ -144,6 +144,61 @@ void main() {
     expect(find.bySemanticsLabel(RegExp(r'15/06.*R\$')), findsOneWidget);
   });
 
+  testWidgets('shows weekday labels like GitHub (Seg/Qua/Sex)', (tester) async {
+    final statuses = _buildStatuses();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Seg'), findsOneWidget);
+    expect(find.text('Qua'), findsOneWidget);
+    expect(find.text('Sex'), findsOneWidget);
+  });
+
+  testWidgets('scroll starts at the end so most recent day is visible', (
+    tester,
+  ) async {
+    final statuses = _buildStatuses();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byType(SingleChildScrollView),
+    );
+    expect(scroll.reverse, isTrue);
+  });
+
+  testWidgets('cells align rows to actual weekday (Sunday on top)', (
+    tester,
+  ) async {
+    // 2024-06-15 is a Saturday → row 6; 2024-06-09 is a Sunday → row 0
+    final statuses = _buildStatuses(count: 7);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: BudgetHeatmap(statuses: statuses)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final sundayCell = tester.getTopLeft(
+      find.bySemanticsLabel(RegExp(r'09/06.*')),
+    );
+    final saturdayCell = tester.getTopLeft(
+      find.bySemanticsLabel(RegExp(r'15/06.*')),
+    );
+
+    // Same week column, Sunday on first row, Saturday on last row
+    expect(sundayCell.dx, equals(saturdayCell.dx));
+    expect(saturdayCell.dy - sundayCell.dy, closeTo(6 * 13.0, 0.01));
+  });
+
   testWidgets('empty statuses renders without error', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
