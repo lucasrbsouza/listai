@@ -672,9 +672,19 @@ class _HeatmapCard extends StatelessWidget {
     );
   }
 
+  static const _weekdayNames = [
+    'Seg',
+    'Ter',
+    'Qua',
+    'Qui',
+    'Sex',
+    'Sáb',
+    'Dom',
+  ];
+
   static String _tooltipText(DayStatus s) {
     final d =
-        '${s.date.day.toString().padLeft(2, '0')}/${s.date.month.toString().padLeft(2, '0')}';
+        '${_weekdayNames[s.date.weekday - 1]}, ${s.date.day.toString().padLeft(2, '0')}/${s.date.month.toString().padLeft(2, '0')}/${s.date.year}';
     final spent = s.totalSpent?.format() ?? '';
     if (s.budgetGoal == null) return '$d — Gasto: $spent';
     return '$d — Gasto: $spent de ${s.budgetGoal!.format()} (meta)';
